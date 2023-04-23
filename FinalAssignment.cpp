@@ -4,7 +4,7 @@
 #include <fstream>
 #include <chrono>
 #include <cstdlib>
-#include <ctype>
+#include <cctype>
 #include <cstring>
 
 using namespace std;
