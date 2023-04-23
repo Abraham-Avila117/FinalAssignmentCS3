@@ -13,7 +13,8 @@ int main(int argc, char** argv){
     /*
     *will clarify with Sherine
     FinalAssignment tasks:
-    1. Hash table comprising of Open hasing (I-VI) and Linear probing (VII-XII)
+    object for main will be hash
+    1. Hash table comprising of Open hasing with chaining (I-VI) and Linear probing (VII-XII)
     2. Word ranking the top 80 words by occurences (most and least). Capitalization does not matter
         and Double hyphen "--" must be removed. All outputs are streamed to a file from command line
         argument. 
