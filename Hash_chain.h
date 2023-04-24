@@ -1,5 +1,5 @@
-#ifndef HASH_H
-#define HASH_H
+#ifndef HASH_CHAIN_H
+#define HASH_CHAIN_H
 
 #include <iostream>
 
@@ -12,13 +12,11 @@ struct Node{
 };
 
 template <class T>
-class Hash{
+class Hash_chain{
 public:
-    Hash();
-    Hash(T, int);
+    Hash_chain();
+    Hash_chain(T, int);
     void insert(T, int);
-    T pop_front(); // not necessary
-    T linear_probe(T)const;
     void print()const;
     bool isEmpty()const;
     bool exceedSize(int)const;
@@ -32,7 +30,7 @@ private:
 };
 
 template <class T>
-Hash<T>::Hash(){
+Hash_chain<T>::Hash_chain(){
     size = 1402895;
     buffer = '\0';
     array = new Node<T>[size];
@@ -41,7 +39,7 @@ Hash<T>::Hash(){
 }
 
 template <class T>
-Hash<T>::Hash(T initalize, int size){
+Hash_chain<T>::Hash_chain(T initalize, int size){
     this->size = size;
     buffer = initalize;
     array = new Node<T>[this->size];
@@ -50,7 +48,7 @@ Hash<T>::Hash(T initalize, int size){
 }
 
 template <class T>
-void Hash<T>::insert(T newitem, int idx){
+void Hash_chain<T>::insert(T newitem, int idx){
     try{
         if(exceedSize(idx)){
             
@@ -87,12 +85,12 @@ void Hash<T>::insert(T newitem, int idx){
 }
 
 template <class T>
-bool Hash<T>::isEmpty()const{
+bool Hash_chain<T>::isEmpty()const{
     return size == 0;
 }
 
 template <class T>
-bool Hash<T>::exceedSize(int idx)const{
+bool Hash_chain<T>::exceedSize(int idx)const{
     return ((idx >= size) ? true : false);
 }
 
