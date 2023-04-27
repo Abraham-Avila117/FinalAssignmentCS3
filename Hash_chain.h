@@ -2,13 +2,14 @@
 #define HASH_CHAIN_H
 
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
 template <class T>
 struct Node{
     T item;
-    Node<T>* chain;
+    Node<T>* next;
 };
 
 template <class T>
@@ -21,7 +22,7 @@ public:
     bool isEmpty()const;
     bool exceedSize(int)const;
 
-    ~Hash();
+    ~Hash_chain();
 
 private:
     Node<T>* array;
@@ -34,8 +35,12 @@ Hash_chain<T>::Hash_chain(){
     size = 1402895;
     buffer = '\0';
     array = new Node<T>[size];
-    for(int i = 0; i < size; i++)
+    assert(array!=nullptr);
+    for(int i = 0; i < size; i++){
         array[i].item = buffer;
+        array[i].next = nullptr;
+    }
+        
 }
 
 template <class T>
@@ -43,45 +48,60 @@ Hash_chain<T>::Hash_chain(T initalize, int size){
     this->size = size;
     buffer = initalize;
     array = new Node<T>[this->size];
-    for(int i = 0; i < this->size; i++)
+    assert(array!=nullptr);
+    for(int i = 0; i < this->size; i++){
         array[i].item = buffer;
+        array[i].next = nullptr;
+    }
 }
 
 template <class T>
 void Hash_chain<T>::insert(T newitem, int idx){
     try{
-        if(exceedSize(idx)){
-            
-        }
+        if(exceedSize(idx))
+            throw idx; 
+        else if(array[idx].item != buffer){
+            Node<T>* curr = array[idx].next;
+            if(array[idx].next == nullptr){
+                curr = new Node<T>;
+                assert(curr!=nullptr);
+                curr->item = newitem;
+                curr->next = nullptr;
+                array[idx].next = curr;
+                curr = nullptr;
+                return;
+            }
 
-        // if(exceedSize(idx)){
-        //     insert(newitem, 0);
-        // }else if(array[idx].item == buffer){
-        //     array[idx].item = newitem;
-        //     arrry[idx].chain = new Node<T>;
-        // }else{
-        //     insert(newitem, idx + 1);
-        // }
+            while(curr->next != nullptr)
+                curr = curr->next;
+            
+            Node<T>* tmp = new Node<T>;
+            assert(tmp!=nullptr);
+            tmp->item = newitem;
+            tmp->next = nullptr;
+            curr->next = tmp;
+            tmp = nullptr;
+            return;   
+        }
     }catch(out_of_range& ex){
         cerr << ex.what() << endl;
         return;
     }
+}
 
-    // if(isEmpty()){
-    //     head = new Node<T>;
-    //     tail = head;
-    //     head->index = 0;
-    //     head->item = newitem;
-    //     head->chain = new Node<T>;
-    //     size++;
-    // }else if(exceedSize(idx)){
-        
-    // }else{
-    //     Node<T>* temp = head;
-    //     for(int i = 0; i < size; i++){
-
-    //     }
-    // }
+template <class T>
+void Hash_chain<T>::print()const{
+    Node<T>* tmp;
+    for(int i = 0; i < size; i++){
+        cout << array[i].item << " -> ";
+        tmp = array[i].next;
+        while(tmp != nullptr){
+            cout << tmp->item << ", ";
+            tmp = tmp->next;
+        }
+        cout << endl;
+    }
+    tmp = nullptr;
 }
 
 template <class T>
@@ -92,6 +112,23 @@ bool Hash_chain<T>::isEmpty()const{
 template <class T>
 bool Hash_chain<T>::exceedSize(int idx)const{
     return ((idx >= size) ? true : false);
+}
+
+template <class T>
+Hash_chain<T>::~Hash_chain(){
+    Node<T>* head, *tmp;
+    for(int i = 0; i < size; i++){
+        head = array[i].next;
+        while(head!=nullptr){
+            tmp = head;
+            head = head->next;
+            delete tmp;
+        }
+        array[i].next = nullptr;
+    }
+    head = nullptr;
+    tmp = nullptr;
+    delete [] array;
 }
 
 #endif
