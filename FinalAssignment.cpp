@@ -6,10 +6,25 @@
 #include <cstdlib>
 #include <cctype>
 #include <cstring>
+#include "Hash_chain.h"
+#include "Vector.h"
 
 using namespace std;
 
+void readFile(ifstream&, Hash_chain<char*>&);
+bool checkTitle(char*);
+
+static int sentenceCount = 0;
+
 int main(int argc, char** argv){
+
+    Hash_chain<char *> hash_chain;
+    ifstream input;
+    ofstream output;
+    input.open(argv[1]);
+
+    readFile(input, hash_chain);
+    hash_chain.print();
     /*
     FinalAssignment tasks:
     object for main will be hash
@@ -51,4 +66,101 @@ int main(int argc, char** argv){
     Note: will consult with sherine about (k) in spec
     */
     return 0;
+}
+
+void readFile(ifstream& infile, Hash_chain<char*>& h){
+
+    Vector<char> vector;
+    Vector<char*> sentence;
+    int size = 81, r = 0, max = 0;
+    char* fname = new char[size], *str;
+    assert(fname!=nullptr);
+
+        try{
+        while(!infile.eof())
+        {
+            infile >> fname[0];
+            infile.getline(&fname[1], size, '\n');  
+            if(strncmp(fname, "ADVENTURE I. A SCANDAL IN BOHEMIA", 33)==0){
+
+                // go until start of sentence
+                memset(fname, '\0', size);
+                do{     
+                    infile >> fname[0];
+                    infile.getline(&fname[1], size);
+                }while(fname[0]!='T');
+
+                // insert to hash table and count sentences
+                while(!infile.eof()){
+                    for(int i = 0; i < strlen(fname); i++){
+                        if(i+1 == strlen(fname)){
+                            if(vector.isEmpty())
+                                continue;
+                            str = vector.getList();
+                            h.insert(str, r%h.getSize());
+                            r = 0;
+                            vector.clear();
+                            str = nullptr;
+                            break;
+                        }  
+                        else if(fname[i] == '-' && fname[i+1] == '-'){
+                            fname[i] = ' ';
+                            fname[i+1] = ' ';
+                        }
+                        else if(fname[i] >= 65 && fname[i] <= 90 || fname[i] >= 97 && fname[i] <= 122 || fname[i] == '-'){
+                            fname[i] = tolower(fname[i]);
+                            vector.push(fname[i]);
+                            r += fname[i];
+                        }
+                        else if(fname[i] == ' ' || fname[i] == ',' || fname[i] == ';' || fname[i] == ':'){
+                            if(vector.isEmpty())
+                                continue;
+                            str = vector.getList();
+                            sentence.push(str);
+                            h.insert(str, r%h.getSize());
+                            if(max < r%h.getSize()) max = r%h.getSize();
+                            vector.clear();
+                            r = 0;
+                            str = nullptr;
+                        }
+                        else if(fname[i] == '.' || fname[i] == '?' || fname[i] == '!'){
+                            str = vector.getList();
+                            h.insert(str, r%h.getSize());
+                            sentence.push(str);
+                            if(!checkTitle(str) && vector.getsize() > 1){
+                                sentenceCount++;
+                                sentence.clear();
+                            }
+                            vector.clear();
+                            r = 0;
+                            str = nullptr;
+                        }
+                    }
+                    memset(fname, '\0', size);
+                    infile >> fname[0];
+                    infile.getline(&fname[1], size); 
+
+                    if(strncmp(fname, "ADVENTURE VI. THE MAN WITH THE TWISTED LIP", 41)==0)
+                        return; 
+                }
+            }
+        }
+        sentence.clear();
+        vector.clear();
+        delete [] fname; 
+    }catch(bad_alloc& ex){
+        cout << ex.what() << endl;
+    }
+}
+
+bool checkTitle(char* check){
+    const char* title[] = {"mr","mrs","dr", "prof", "ms",
+     "jr", "sr", "st", "hon", "rev", "esq", "messers", "mmes", 
+     "msgr", "rt"};
+    
+    for(int i = 0; i < 16; i++){
+        if(title[i] == check)
+            return true;
+    }
+    return false;
 }
