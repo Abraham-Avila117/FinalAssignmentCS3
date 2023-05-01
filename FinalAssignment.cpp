@@ -17,15 +17,21 @@ bool checkTitle(char*);
 int sentenceCount = 0;
 const char* adventure[] = {"I.", "VII.", "XII.", "***"};
 
+struct Occur{
+    char* word;
+    int rank = 0 ;
+};
+
 int main(int argc, char** argv){
 
+    Occur* occur = new Occur[255];
     Hash_chain<char *> hash_chain;
     ifstream input;
     ofstream output;
     input.open(argv[1]);
 
     readFile(input, hash_chain);
-    // hash_chain.print();
+    hash_chain.print();
 
     /*
     FinalAssignment tasks:
@@ -100,13 +106,14 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                         cout << "we did it!!!" << endl;
                         return; 
                     }
+
                     for(int i=0; i < strlen(pch); i++){
                         if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
                             str.push(tolower(pch[i]));
                             r += tolower(pch[i]);
                         }
                         else if(pch[i] == '.' || pch[i] == '?' || pch[i] == '!'){
-                            if(!checkTitle(tmp) && str.getsize() > 1){
+                            if(!checkTitle(pch) && str.getsize() > 1){
                                 sentenceCount++;
                                 break;
                             }
@@ -115,11 +122,10 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                     tmp = str.getList();
                     if(strcmp(tmp, "\0")!=0){
                         h.insert(tmp, r%h.getSize());
-
                     }
                     str.clear();
                     r = 0;      
-                    tmp = nullptr;              
+                    tmp = nullptr;  
                     pch = strtok(nullptr, d);
                 }
             }

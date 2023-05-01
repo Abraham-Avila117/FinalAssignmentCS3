@@ -33,6 +33,7 @@ public:
     bool isEmpty()const;
     bool exceedSize(int)const;
     bool isIn(T, int)const;
+    void sort();
 
     ~Hash_chain();
 
@@ -131,7 +132,7 @@ void Hash_chain<T>::print()const{
                 cout << tmp->item << ", ";
                 tmp = tmp->next;
             }
-            cout << endl;            
+            cout << "|" << endl;            
         }
     }
     tmp = nullptr;
@@ -147,32 +148,28 @@ bool Hash_chain<T>::exceedSize(int idx)const{
     return ((idx >= size) ? true : false);
 }
 
+// this function is specific for char* datatypes
 template <class T>
 bool Hash_chain<T>::isIn(T search, int place)const{
     Node<T>* tmp;
-    if(array[place].item == nullptr && array[place].next == nullptr){
-        tmp = nullptr;
+    if(array[place].item == nullptr)
         return false;
-    }
-    else if(strcmp(array[place].item, search)==0){
+    else if(strcmp(array[place].item,search)==0){
         array[place].rank++;
         tmp = nullptr;
         return true;
-    } 
+    }
     else{
-        tmp = &array[place];
-        // cout << "word to compare: " << search << endl;
-        while(tmp->next != nullptr){
-            if(strcmp(tmp->item, search) == 0){
+        tmp = array[place].next;
+        while(tmp != nullptr){
+            if(strcmp(tmp->item,search)==0){
                 tmp->rank++;
                 tmp = nullptr;
                 return true;
             }
-            // cout << "test: " << tmp->item << endl;
-            // cout << "result: " << (tmp->item == search) << endl;
             tmp = tmp->next;
         }
-    } 
+    }
     tmp = nullptr;
     return false;
 }
