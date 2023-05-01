@@ -1,5 +1,12 @@
 #ifndef HASH_CHAIN_H
 #define HASH_CHAIN_H
+/*
+This header file was made and developed by Abraham Avila
+
+We used a header file for this project to make the hash chaining 
+data structure to implement the object hash and store the data in
+the table.
+*/
 
 #include <iostream>
 #include <cassert>
@@ -115,18 +122,17 @@ template <class T>
 void Hash_chain<T>::print()const{
     Node<T>* tmp;
     for(int i = 0; i < size; i++){
-        if(array[i].item == nullptr) continue;
+        if(array[i].item == nullptr && array[i].next == nullptr) continue;
         else{
             cout << array[i].item << " -> ";
             tmp = &array[i];
             tmp = tmp->next;
-            while(tmp->next != nullptr){
+            while(tmp != nullptr){
                 cout << tmp->item << ", ";
                 tmp = tmp->next;
             }
             cout << endl;            
         }
-
     }
     tmp = nullptr;
 }
