@@ -132,6 +132,7 @@ int main()
                 int prime = 17;
 
                 karpRabin(pattern, text, prime);
+                cout << "THE ADVENTURE OF THE ENGINEER'S THUMB" << endl;
                 karpRabin(pattern, result, prime);
 
                 run = false;
