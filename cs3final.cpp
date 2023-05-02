@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cassert>
 #include <chrono>
-#define tMax 256
 
 using namespace std;
 using namespace chrono;
