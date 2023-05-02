@@ -1,138 +1,142 @@
 #include <iostream>
-#include <string>
-#include <cstring>
 #include <fstream>
+#include <cstring>
+#include <cassert>
+#include <chrono>
+#define tMax 256
 
 using namespace std;
+using namespace chrono;
 
-int HornerRule(int n, int primeInput);
 void karpRabin(string pattern, const char inputText[], int primeInput);
+int pow(int x, int n);
+char* rightLine(string file_path, string start_string, string end_string);
+
+const int MAX = 1000000;
+
 
 void karpRabin(string pattern, const char inputText[], int primeInput)
 {
+    auto start = high_resolution_clock::now();
     int pLen = pattern.size();
     int tLen = strlen(inputText);
     int pHash = 0;
     int tHash = 0;
     int count = 0;
+
     int i, j;
 
-    // Prompt user for word to search
-    // cout << "Enter word to search: ";
-    // cin >> pattern;
-
-    // Calculate pattern hash value
     for(i=0; i < pLen; i++)
     {
-        pHash = (pHash*256 + pattern[i]) % primeInput;
-        tHash = (tHash*256 + inputText[i]) % primeInput;
+        pHash = (pattern[i]) % primeInput;
+        tHash = (inputText[i] % primeInput);
     }
 
-    // Perform Rabin-Karp pattern matching
-    for(i=0; i <= tLen-pLen; i++)
+    bool in_word = false;
+    string word;
+    for(i=0; i < tLen; i++)
     {
-        if(pHash == tHash)
-        {
-            for(j=0; j<pLen; j++)
-            {
-                if(inputText[i+j] != pattern[j])
-                {
-                    break;
+        if(isalpha(inputText[i])) {
+            in_word = true;
+            word += tolower(inputText[i]);
+        } else if(in_word) {
+            in_word = false;
+            if(word.size() >= pLen) {
+                bool match = true;
+                for(j = 0; j < pLen; j++) {
+                    if(word[j] != pattern[j]) {
+                        match = false;
+                        break;
+                    }
+                }
+                if(match) {
+                    count++;
                 }
             }
-
-            if(j == pLen)
-            {
-                count++;
-                cout << "Found at position " << i << endl;
-            }
+            word.clear();
         }
-        if(i<tLen-pLen)
-        {
-            tHash = (256*(tHash - inputText[i]*HornerRule(pLen-1, primeInput)) + inputText[i+pLen]) % primeInput;
-
-            if(tHash < 0)
-            {
-                tHash = (tHash + primeInput);
-            }
-        }
-
     }
+    auto stop = high_resolution_clock::now();
+    auto durationR = duration_cast<microseconds>(stop-start);
+
+    cout << "Karp Rabin:" << endl;
     cout << "Number of occurrences in text is: " << count << endl;
+    cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
 }
 
-int HornerRule(int n, int primeInput) {
+int pow(int x, int n) {
     int result = 1;
-    for (int i = 1; i <= n; i++) {
-        result = (result * 256) % primeInput;
+    for (int i = 0; i < n; i++) {
+        result *= x;
     }
     return result;
 }
 
+char* rightLine(string file_path, string start_string, string end_string)
+{
+    char* content = new char[MAX];
+    memset(content, 0, MAX);
+
+    bool found_start_string = false;
+
+    ifstream file(file_path);
+    if (!file) {
+        return "fail";
+    }
+
+    string line;
+    while (getline(file, line)) {
+        if (found_start_string) {
+            if (line.find(end_string) != string::npos) {
+                return content;
+            } else {
+                strcat(content, (line + "\n").c_str());
+            }
+        } else if (line.find(start_string) != string::npos) {
+            found_start_string = true;
+        }
+    }
+
+    return "fail";
+}
+
+
 int main()
 {
     bool run = true;
-    string file = "test.txt";
+    string filename = "test.txt";
+    string pattern;
     ifstream infile;
-    int primeInput = 101;
-    string word;
-    long int len;
-
-    int words =1; //will not count first word so initial value is 1
-    char ch;
-    infile.seekg(0,ios::beg); //bring position of file pointer to begining of file
-
-    infile.open(file);
- 
-
-    while(infile)
-            {
-                infile.get(ch);
-                if(ch==' '||ch=='\n')
-                words++;
-            } 
-    cout << "Length of file: " << words << endl;
-
-
+    int flen;
+    char in;
     while(run)
     {
-        //infile.open(file);
-        if(infile.is_open())
-        {
-            int words =1; //will not count first word so initial value is 1
-            char ch;
-            infile.seekg(0,ios::beg); //bring position of file pointer to begining of file
- 
-            // while(infile)
-            // {
-            //     infile.get(ch);
-            //     if(ch==' '||ch=='\n')
-            //     words++;
-            // } 
-            // cout << "Length of file: " << words << endl;
-
- 
-            char inputText[len];
-
-            infile.read(inputText, len);
-
-            cout << "File read successfully" << endl;
-
-                cout << "Enter word: ";
-                cin >> word;
-
-
-            if(infile)
+            infile.open(filename, ios::in | ios::binary);
+            if(infile && run == true)
             {
-                karpRabin(word, inputText, primeInput);
-                break;
-            }
-            run = false;
-            infile.close();
-            break;
+                char* result = rightLine(filename, "IX. THE ADVENTURE OF THE ENGINEER'S THUMB", "X. THE ADVENTURE OF THE NOBLE BACHELOR");
 
-        }
-    }
-    // cout << "Length of file: " << words << endl;
-    return 0;
+                infile.seekg(0, infile.end);
+                flen = infile.tellg();
+                infile.seekg(0,infile.beg);
+
+                char text[flen];
+                infile.read(text, flen);
+
+                infile.close();
+
+                cout << "File Read Successfully" << endl << endl;
+
+                cout << "Enter a pattern: ";
+                cin >> pattern;
+
+                int prime = 17;
+
+                karpRabin(pattern, text, prime);
+                karpRabin(pattern, result, prime);
+
+                run = false;
+            }
+    }  
+return 0;
 }
