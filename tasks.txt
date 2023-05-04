@@ -5,25 +5,25 @@
     done my Abraham Avila. sentence counting is done
 
     object for main will be hash
-    ~1. (Abraham) Hash table comprising of Open hasing with chaining (I-VI) 
-        1a. Count the number of occurences of the words/strings in the section 
+    *1. (Abraham) Hash table comprising of Open hasing with chaining (I-VI) 
+        *1a. Count the number of occurences of the words/strings in the section 
 
         1b. Answer (b) and (c) in assignment spec  
 
-    /2. (Ari) Linear probing (VII-XII)
+    *2. (Ari) Linear probing (VII-XII)
         2a. Count the number of occurences of the words/strings in the section
 
         2b. Answer question (a), (c), and (d) in assignment spec
 
-    /3. (Connor) In IX, user must be prompt to do a word search, and use the Rabin-Karp pattern
+    *3. (Connor) In IX, user must be prompt to do a word search, and use the Rabin-Karp pattern
         matching and Horner's rule for the rolling hash. Display the word count and positions 
         of the word from the user. This covers (f) in the assignment spec
 
-    4. (Ari)Word ranking the top 80 words by occurences (most and least). Capitalization does not matter
+    /4. (Ari)Word ranking the top 80 words by occurences (most and least). Capitalization does not matter
         and Double hyphen "--" must be removed. All outputs are streamed to a file from command 
         line argument. This covers (g) and (h) assignment spec
 
-    5. (Abraham) Develope the main driver program function that is menu driven (0) to terminate and (99) 
+    /5. (Abraham) Develope the main driver program function that is menu driven (0) to terminate and (99) 
         to output everything. This will take in a command line argument of the input file and 
         output file.
     
@@ -32,7 +32,7 @@
         team if definition works. This covers (i) in the 
         assignment spec
 
-    7. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
+    /7. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
         assignment. This task will be responsible for testing edge cases or errors and 
         addressing them (debugger). 
     

@@ -27,15 +27,18 @@ class Hash_chain{
 public:
     Hash_chain();
     Hash_chain(T, int);
-    int getSize()const;
-    void insert(T, int);
-    void insertCharArray(char*, int);
-    void print()const;
-    void printIdx(int)const;
-    bool isEmpty()const;
-    bool exceedSize(int)const;
-    bool isIn(T, int)const;
-    bool isInChar(char*,int)const; //this is specific to char*
+    
+    int getSize()const;     // gets size of hash table
+    T* search(int)const;    // searches the item given a hash index
+    int search(T)const;     // searches the hash index given an item
+    void insert(T, int);    // insertion to hash table
+    void insertCharArray(char*, int);   //insertion specific to char*
+    void print()const;          // prints the entire table
+    void printIdx(int)const;    // prints a specific hash index item and its linklist
+    bool isEmpty()const;        // checks if hash table is empty
+    bool exceedSize(int)const;  // function to prevent out of range array access
+    bool isIn(T, int)const;     // checks if the given itam and hash index is in the table
+    bool isInChar(char*,int)const; // this is specific to char* isIn function
 
     ~Hash_chain();
 
@@ -75,6 +78,30 @@ Hash_chain<T>::Hash_chain(T initalize, int size){
 template <class T>
 int Hash_chain<T>::getSize()const{
     return size;
+}
+
+template <class T>
+T* Hash_chain<T>::search(int hashIdx)const{
+    return array[hashIdx].item;
+}
+
+template <class T>
+int Hash_chain<T>::search(T findItem)const{
+    Node<T>* tmp;
+    for(int i = 0; i < size; i++){
+        if(strcmp(array[i].item, findItem) == 0){
+            return i;
+        }
+        else{
+            tmp = array[i].next;
+            while(tmp != nullptr){
+                if(strcmp(tmp->item, findItem) == 0)
+                    return i;
+                tmp = tmp->next;
+            }
+        }
+    }
+    return -1;
 }
 
 template <class T>
@@ -168,8 +195,12 @@ void Hash_chain<T>::insert(T newitem, int idx){
 template <class T>
 void Hash_chain<T>::print()const{
     Node<T>* tmp;
+    int nullCounter = 0;
     for(int i = 0; i < size; i++){
-        if(array[i].item == nullptr && array[i].next == nullptr) continue;
+        if(array[i].item == nullptr && array[i].next == nullptr){
+            nullCounter++;
+            continue;
+        } 
         else{
             cout << array[i].item << " -> ";
             tmp = &array[i];
@@ -181,6 +212,7 @@ void Hash_chain<T>::print()const{
             cout << "|" << endl;            
         }
     }
+    cout << "Nulls in table is: " << nullCounter << endl;
     tmp = nullptr;
 }
 
@@ -225,9 +257,6 @@ bool Hash_chain<T>::isIn(T search, int place)const{
         while(tmp != nullptr){
             if(tmp->item == search){
                 tmp->rank++;
-                if(tmp->rank > array[place].rank){
-
-                }
                 tmp = nullptr;
                 return true;
             }

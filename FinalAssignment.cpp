@@ -10,9 +10,11 @@
 #include "Vector.h"
 
 using namespace std;
+using namespace chrono;
 
-void readFile(ifstream&, Hash_chain<char*>&);
+void readFile(ifstream&, ofstream&, Hash_chain<char*>&);
 bool checkTitle(char*);
+void showMenu();
 
 int sentenceCount = 0;
 const char* adventure[] = {"VII.", "IX", "XII.", "***"};
@@ -25,20 +27,13 @@ struct Occur{
 
 
 int main(int argc, char** argv){
-    
-    Hash_chain<char *> hash_chain;
+
+    Hash_chain<char *> hash_chain(nullptr, 1069);
     ifstream input;
     ofstream output;
     input.open(argv[1]);
 
-    readFile(input, hash_chain);
-    output.open(argv[2]);
-    streambuf* stream_buffer_cout = cout.rdbuf();
-    streambuf* stream_buffer_cerr = cerr.rdbuf();
-    streambuf* stream_buffer_outfile = output.rdbuf();
-    cerr.rdbuf(stream_buffer_outfile);
-
-
+    readFile(input, output, hash_chain);
 
     hash_chain.print();
     // hash_chain.printIdx(541);
@@ -46,7 +41,7 @@ int main(int argc, char** argv){
     return 0;
 }
 
-void readFile(ifstream& infile, Hash_chain<char*>& h){
+void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
@@ -113,4 +108,21 @@ bool checkTitle(char* check){
             return true;
     }
     return false;
+}
+
+void showMenu(){
+    cout << "Enter for the following: "<< endl;
+    cout << "(0) to exit" << endl;
+    cout << "(1) to perform hash look up (Adventures I-VII)" << endl;
+    cout << "(2) to perform hash look up (Adventures VIII-XII)" << endl;
+    cout << "(3) to search for a word (Adventure IX)" << endl;
+    cout << "(4) to print hash table (chaining)" << endl;
+    cout << "(5) to print hash table (linear probing)" << endl;
+    cout << "(6) to look up index in hash table (chaining)" << endl;
+    cout << "(7) to look up index in hash table (linear probing)" << endl;
+    cout << "(8) to output the number of sentences in the text" << endl;
+    cout << "(9) to output the most occuring words (top 80)" << endl;
+    cout << "(10) to output the least occuring words (bottom 80)" << endl;
+    cout << "(99) to output everything" << endl;
+
 }
