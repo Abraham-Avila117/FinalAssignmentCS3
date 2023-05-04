@@ -36,9 +36,6 @@ public:
     bool exceedSize(int)const;
     bool isIn(T, int)const;
     bool isInChar(char*,int)const; //this is specific to char*
-    int* rankListMost();
-    int* rankListLeast();
-    void sortRank();
 
     ~Hash_chain();
 
@@ -85,7 +82,7 @@ void Hash_chain<T>::insertCharArray(char* newitem, int idx){
     try{
         if(exceedSize(idx))
             throw idx;           
-        else if(isInChar(newitem, idx)){
+        else if(isInChar(newitem, idx)){ //this conditional is the only difference to insert
             return;
         }
         else if(array[idx].item != buffer){
@@ -272,36 +269,6 @@ bool Hash_chain<T>::isInChar(char* search, int place)const{
     }
     tmp = nullptr;
     return false;
-}
-
-template <class T>
-int* Hash_chain<T>::rankListMost(){
-    int* most = new int[80];
-    sortRank();
-    return most;
-}
-
-template <class T>
-int* Hash_chain<T>::rankListLeast(){
-    int* most = new int[80];
-    sortRank();
-    return most;
-}
-
-template <class T>
-void Hash_chain<T>::sortRank(){
-    Node<T>* tmp;
-    for(int i = 0; i < size; i++){
-        tmp = array[i].next;
-        if(tmp == nullptr) continue;
-
-        
-
-
-
-
-
-    }
 }
 
 template <class T>

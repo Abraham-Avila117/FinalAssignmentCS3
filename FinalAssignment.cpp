@@ -23,15 +23,23 @@ struct Occur{
     Occur* next;
 };
 
-int main(int argc, char** argv){
 
-    Occur* occur = new Occur[255];
+int main(int argc, char** argv){
+    
     Hash_chain<char *> hash_chain;
     ifstream input;
     ofstream output;
     input.open(argv[1]);
 
     readFile(input, hash_chain);
+    output.open(argv[2]);
+    streambuf* stream_buffer_cout = cout.rdbuf();
+    streambuf* stream_buffer_cerr = cerr.rdbuf();
+    streambuf* stream_buffer_outfile = output.rdbuf();
+    cerr.rdbuf(stream_buffer_outfile);
+
+
+
     hash_chain.print();
     // hash_chain.printIdx(541);
 
@@ -64,7 +72,11 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                     }
 
                     for(int i=0; i < strlen(pch); i++){
-                        if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
+                        if(pch[i] == '-' && pch[i+1] == '-'){
+                            pch[i] = ' ';
+                            pch[i+1] = ' ';
+                        }
+                        else if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
                             str.push(tolower(pch[i]));
                             r += tolower(pch[i]);
                         }
