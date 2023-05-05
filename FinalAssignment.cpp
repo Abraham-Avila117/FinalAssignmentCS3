@@ -28,14 +28,56 @@ struct Occur{
 
 int main(int argc, char** argv){
 
+    int choice;
     Hash_chain<char *> hash_chain(nullptr, 1069);
     ifstream input;
     ofstream output;
-    input.open(argv[1]);
+    input.exceptions(fstream::failbit | fstream:: badbit);
+    try{
+        input.open(argv[1]);
+    }catch(fstream::failure ex){
+        cerr << "failed to open file: exception " << ex.what() << endl;
+        exit(1);
+    }
+    output.exceptions(fstream::failbit | fstream:: badbit);
+    try{
+        // output.open(argv[2]);
+        readFile(input, output, hash_chain);
+        showMenu();
+        while(choice != 0){
+            cin >> choice;
+            switch(choice){
+                case 1:
+                    // perform hash look up (Adventures I-VII)
+                case 2:
+                    // perform hash look up (Adventures VIII-XII)
+                case 3:
+                    // search for a word (Adventure IX)
+                case 4:
+                    // print hash table (chaining)
+                case 5:
+                    // print hash table (linear probing)
+                case 6:
+                    // look up index in hash table (chaining)
+                case 7:
+                    // look up index in hash table (linear probing)
+                case 8:
+                    // output the number of sentences in the text
+                case 9:
+                    // output the most occuring words (top 80)
+                case 10:
+                    // output the least occuring words (bottom 80)
+                case 99:;
+                    // output everything
 
-    readFile(input, output, hash_chain);
+            }        
+        } 
+    }catch(fstream::failure ex){
+        cerr << "File failure in main: " << ex.what() << endl;
+    }
 
-    hash_chain.print();
+
+    // hash_chain.print();
     // hash_chain.printIdx(541);
 
     return 0;
@@ -45,9 +87,11 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
+    assert(fname!=nullptr);
     char* sname = new char[ssize];
+    assert(sname!=nullptr);
     char *tmp = nullptr, *pch;
-    char d[] = " \n\'\",;:";
+    char d[] = " \n\'\"\r,;:";
 
     while(!infile.eof()){
         infile >> fname[0];
@@ -70,9 +114,11 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
                         if(pch[i] == '-' && pch[i+1] == '-'){
                             pch[i] = ' ';
                             pch[i+1] = ' ';
+                            // strncpy(pch, pch, strlen(pch)-1);
                         }
                         else if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
                             str.push(tolower(pch[i]));
+                            pch[i] = tolower(pch[i]);
                             r += tolower(pch[i]);
                         }
                         else if(pch[i] == '.' || pch[i] == '?' || pch[i] == '!'){
@@ -99,12 +145,12 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
 }
 
 bool checkTitle(char* check){
-    const char* title[] = {"mr","mrs","dr", "prof", "ms",
-     "jr", "sr", "st", "hon", "rev", "esq", "messers", "mmes", 
-     "msgr", "rt"};
+    const char* title[] = {"mr.","mrs.","dr.", "prof.", "ms.",
+     "jr.", "sr.", "sir.","st.", "hon.", "rev.", "esq.", "messers.", "mmes.", 
+     "msgr.", "rt."};
     
     for(int i = 0; i < 16; i++){
-        if(title[i] == check)
+        if(strcmp(title[i], check) == 0)
             return true;
     }
     return false;
@@ -124,5 +170,4 @@ void showMenu(){
     cout << "(9) to output the most occuring words (top 80)" << endl;
     cout << "(10) to output the least occuring words (bottom 80)" << endl;
     cout << "(99) to output everything" << endl;
-
 }
