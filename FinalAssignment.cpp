@@ -10,85 +10,86 @@
 #include "Vector.h"
 
 using namespace std;
+using namespace chrono;
 
-void readFile(ifstream&, Hash_chain<char*>&);
+void readFile(ifstream&, ofstream&, Hash_chain<char*>&);
 bool checkTitle(char*);
+void showMenu();
 
 int sentenceCount = 0;
-const char* adventure[] = {"I.", "VII.", "XII.", "***"};
+const char* adventure[] = {"VII.", "IX", "XII.", "***"};
 
 struct Occur{
     char* word;
-    int rank = 0 ;
+    int rank = 0;
+    Occur* next;
 };
+
 
 int main(int argc, char** argv){
 
-    Occur* occur = new Occur[255];
-    Hash_chain<char *> hash_chain;
+    int choice;
+    Hash_chain<char *> hash_chain(nullptr, 1000);
     ifstream input;
     ofstream output;
-    input.open(argv[1]);
+    input.exceptions(fstream::failbit | fstream::badbit);
+    try{
+        input.open(argv[1]);
+    }catch(fstream::failure ex){
+        cerr << "failed to open file: exception " << ex.what() << endl;
+        exit(1);
+    }
+    output.exceptions(fstream::failbit | fstream::badbit);
+    try{
+        // output.open(argv[2]);
+        readFile(input, output, hash_chain);
+        // showMenu();
+        // while(choice != 0){
+        //     cin >> choice;
+        //     switch(choice){
+        //         case 1:
+        //             // perform hash look up (Adventures I-VII)
+        //         case 2:
+        //             // perform hash look up (Adventures VIII-XII)
+        //         case 3:
+        //             // search for a word (Adventure IX)
+        //         case 4:
+        //             // print hash table (chaining)
+        //         case 5:
+        //             // print hash table (linear probing)
+        //         case 6:
+        //             // look up index in hash table (chaining)
+        //         case 7:
+        //             // look up index in hash table (linear probing)
+        //         case 8:
+        //             // output the number of sentences in the text
+        //         case 9:
+        //             // output the most occuring words (top 80)
+        //         case 10:
+        //             // output the least occuring words (bottom 80)
+        //         case 99:;
+        //             // output everything
 
-    readFile(input, hash_chain);
+        //     }        
+        // } 
+    }catch(fstream::failure ex){
+        cerr << "File failure in main: " << ex.what() << endl;
+    }
+    // hash_chain.optimize();
     hash_chain.print();
 
-    /*
-    FinalAssignment tasks:
-    
-    Update: readfile is now much shorter and less complecated. This task was
-    done my Abraham Avila. sentence counting is done
-
-    object for main will be hash
-    ~1. (Abraham) Hash table comprising of Open hasing with chaining (I-VI) 
-        1a. Count the number of occurences of the words/strings in the section 
-
-        1b. Answer (b) and (c) in assignment spec  
-
-    /2. (Ari) Linear probing (VII-XII)
-        2a. Count the number of occurences of the words/strings in the section
-
-        2b. Answer question (a), (c), and (d) in assignment spec
-
-    /3. (Connor) In IX, user must be prompt to do a word search, and use the Rabin-Karp pattern
-        matching and Horner's rule for the rolling hash. Display the word count and positions 
-        of the word from the user. This covers (f) in the assignment spec
-
-    4. (Ari)Word ranking the top 80 words by occurences (most and least). Capitalization does not matter
-        and Double hyphen "--" must be removed. All outputs are streamed to a file from command 
-        line argument. This covers (g) and (h) assignment spec
-
-    5. (Abraham) Develope the main driver program function that is menu driven (0) to terminate and (99) 
-        to output everything. This will take in a command line argument of the input file and 
-        output file.
-    
-    *6. (everyone: use global int variable)(solved by Abraham Avila using readFile) Develope 
-        sentence counting function. Be sure to clearly define what is a sentence and consult
-        team if definition works. This covers (i) in the 
-        assignment spec
-
-    7. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
-        assignment. This task will be responsible for testing edge cases or errors and 
-        addressing them (debugger). 
-    
-    For each task, these must be reported:
-        1. Did you use a .h file to achive the tasks? (e) in spec
-        2. Make sure to label your section when outputing to the file
-        3. Everything will be output lower case except for Section title 
-        4. report runtime in nansec (exception: task 6). (j) in spec
-    
-    Note: will consult with sherine about (k) in spec
-    */
     return 0;
 }
 
-void readFile(ifstream& infile, Hash_chain<char*>& h){
+void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
+    assert(fname!=nullptr);
     char* sname = new char[ssize];
+    assert(sname!=nullptr);
     char *tmp = nullptr, *pch;
-    char d[] = " \n\'\",;:-";
+    char d[] = " \n\'\"\r,;:";
 
     while(!infile.eof()){
         infile >> fname[0];
@@ -108,8 +109,14 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                     }
 
                     for(int i=0; i < strlen(pch); i++){
-                        if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
+                        if(pch[i] == '-' && pch[i+1] == '-'){
+                            pch[i] = ' ';
+                            pch[i+1] = ' ';
+                            break;
+                        }
+                        else if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
                             str.push(tolower(pch[i]));
+                            pch[i] = tolower(pch[i]);
                             r += tolower(pch[i]);
                         }
                         else if(pch[i] == '.' || pch[i] == '?' || pch[i] == '!'){
@@ -121,7 +128,7 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                     }
                     tmp = str.getList();
                     if(strcmp(tmp, "\0")!=0){
-                        h.insert(tmp, r%h.getSize());
+                        h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
                     r = 0;      
@@ -135,99 +142,30 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
     delete [] sname;
 }
 
-// void readFile(ifstream& infile, Hash_chain<char*>& h){
-
-//     Vector<char> vector;
-//     Vector<char*> sentence;
-//     int size = 81, r = 0, max = 0;
-//     char* fname = new char[size], *str;
-//     assert(fname!=nullptr);
-
-//         try{
-//         while(!infile.eof())
-//         {
-//             infile >> fname[0];
-//             infile.getline(&fname[1], size, '\n');  
-//             if(strncmp(fname, "ADVENTURE I. A SCANDAL IN BOHEMIA", 33)==0){
-
-//                 // go until start of sentence
-//                 memset(fname, '\0', size);
-//                 do{     
-//                     infile >> fname[0];
-//                     infile.getline(&fname[1], size);
-//                 }while(fname[0]!='T');
-
-//                 // insert to hash table and count sentences
-//                 while(!infile.eof()){
-//                     for(int i = 0; i < strlen(fname); i++){
-//                         if(i+1 == strlen(fname)){
-//                             if(vector.isEmpty())
-//                                 continue;
-//                             str = vector.getList();
-//                             h.insert(str, r%h.getSize());
-//                             r = 0;
-//                             vector.clear();
-//                             str = nullptr;
-//                             break;
-//                         }  
-//                         else if(fname[i] == '-' && fname[i+1] == '-'){
-//                             fname[i] = ' ';
-//                             fname[i+1] = ' ';
-//                         }
-//                         else if(fname[i] >= 65 && fname[i] <= 90 || fname[i] >= 97 && fname[i] <= 122 || fname[i] == '-'){
-//                             fname[i] = tolower(fname[i]);
-//                             vector.push(fname[i]);
-//                             r += fname[i];
-//                         }
-//                         else if(fname[i] == ' ' || fname[i] == ',' || fname[i] == ';' || fname[i] == ':'){
-//                             if(vector.isEmpty())
-//                                 continue;
-//                             str = vector.getList();
-//                             sentence.push(str);
-//                             h.insert(str, r%h.getSize());
-//                             if(max < r%h.getSize()) max = r%h.getSize();
-//                             vector.clear();
-//                             r = 0;
-//                             str = nullptr;
-//                         }
-//                         else if(fname[i] == '.' || fname[i] == '?' || fname[i] == '!'){
-//                             str = vector.getList();
-//                             h.insert(str, r%h.getSize());
-//                             sentence.push(str);
-//                             if(!checkTitle(str) && vector.getsize() > 1){
-//                                 sentenceCount++;
-//                                 sentence.clear();
-//                             }
-//                             vector.clear();
-//                             r = 0;
-//                             str = nullptr;
-//                         }
-//                     }
-//                     memset(fname, '\0', size);
-//                     infile >> fname[0];
-//                     infile.getline(&fname[1], size); 
-
-//                     if(strncmp(fname, "VII. THE ADVENTURE OF THE BLUE CARBUNCLE", 41)==0)
-//                         return; 
-//                 }
-//             }
-//         }
-//         sentence.clear();
-//         vector.clear();
-//         delete [] fname; 
-//     }catch(bad_alloc& ex){
-//         cout << ex.what() << endl;
-//     }
-// }
-
 bool checkTitle(char* check){
-    const char* title[] = {"mr","mrs","dr", "prof", "ms",
-     "jr", "sr", "st", "hon", "rev", "esq", "messers", "mmes", 
-     "msgr", "rt"};
+    const char* title[] = {"mr.","mrs.","dr.", "prof.", "ms.",
+     "jr.", "sr.", "sir.","st.", "hon.", "rev.", "esq.", "messers.", "mmes.", 
+     "msgr.", "rt."};
     
     for(int i = 0; i < 16; i++){
-        if(title[i] == check)
+        if(strcmp(title[i], check) == 0)
             return true;
     }
     return false;
+}
+
+void showMenu(){
+    cout << "Enter for the following: "<< endl;
+    cout << "(0) to exit" << endl;
+    cout << "(1) to perform hash look up (Adventures I-VII)" << endl;
+    cout << "(2) to perform hash look up (Adventures VIII-XII)" << endl;
+    cout << "(3) to search for a word (Adventure IX)" << endl;
+    cout << "(4) to print hash table (chaining)" << endl;
+    cout << "(5) to print hash table (linear probing)" << endl;
+    cout << "(6) to look up index in hash table (chaining)" << endl;
+    cout << "(7) to look up index in hash table (linear probing)" << endl;
+    cout << "(8) to output the number of sentences in the text" << endl;
+    cout << "(9) to output the most occuring words (top 80)" << endl;
+    cout << "(10) to output the least occuring words (bottom 80)" << endl;
+    cout << "(99) to output everything" << endl;
 }
