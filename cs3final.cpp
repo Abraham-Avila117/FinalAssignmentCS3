@@ -13,7 +13,6 @@ char* rightLine(string file_path, string start_string, string end_string);
 
 const int MAX = 1000000;
 
-
 void karpRabin(string pattern, const char inputText[], int primeInput)
 {
     auto start = high_resolution_clock::now();
