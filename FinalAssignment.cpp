@@ -29,56 +29,54 @@ struct Occur{
 int main(int argc, char** argv){
 
     int choice;
-    Hash_chain<char *> hash_chain(nullptr, 1069);
+    Hash_chain<char *> hash_chain(nullptr, 1000);
     ifstream input;
     ofstream output;
-    input.exceptions(fstream::failbit | fstream:: badbit);
+    input.exceptions(fstream::failbit | fstream::badbit);
     try{
         input.open(argv[1]);
     }catch(fstream::failure ex){
         cerr << "failed to open file: exception " << ex.what() << endl;
         exit(1);
     }
-    output.exceptions(fstream::failbit | fstream:: badbit);
+    output.exceptions(fstream::failbit | fstream::badbit);
     try{
         // output.open(argv[2]);
         readFile(input, output, hash_chain);
-        showMenu();
-        while(choice != 0){
-            cin >> choice;
-            switch(choice){
-                case 1:
-                    // perform hash look up (Adventures I-VII)
-                case 2:
-                    // perform hash look up (Adventures VIII-XII)
-                case 3:
-                    // search for a word (Adventure IX)
-                case 4:
-                    // print hash table (chaining)
-                case 5:
-                    // print hash table (linear probing)
-                case 6:
-                    // look up index in hash table (chaining)
-                case 7:
-                    // look up index in hash table (linear probing)
-                case 8:
-                    // output the number of sentences in the text
-                case 9:
-                    // output the most occuring words (top 80)
-                case 10:
-                    // output the least occuring words (bottom 80)
-                case 99:;
-                    // output everything
+        // showMenu();
+        // while(choice != 0){
+        //     cin >> choice;
+        //     switch(choice){
+        //         case 1:
+        //             // perform hash look up (Adventures I-VII)
+        //         case 2:
+        //             // perform hash look up (Adventures VIII-XII)
+        //         case 3:
+        //             // search for a word (Adventure IX)
+        //         case 4:
+        //             // print hash table (chaining)
+        //         case 5:
+        //             // print hash table (linear probing)
+        //         case 6:
+        //             // look up index in hash table (chaining)
+        //         case 7:
+        //             // look up index in hash table (linear probing)
+        //         case 8:
+        //             // output the number of sentences in the text
+        //         case 9:
+        //             // output the most occuring words (top 80)
+        //         case 10:
+        //             // output the least occuring words (bottom 80)
+        //         case 99:;
+        //             // output everything
 
-            }        
-        } 
+        //     }        
+        // } 
     }catch(fstream::failure ex){
         cerr << "File failure in main: " << ex.what() << endl;
     }
-
-
-    // hash_chain.print();
-    // hash_chain.printIdx(541);
+    // hash_chain.optimize();
+    hash_chain.print();
 
     return 0;
 }
@@ -114,7 +112,7 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
                         if(pch[i] == '-' && pch[i+1] == '-'){
                             pch[i] = ' ';
                             pch[i+1] = ' ';
-                            // strncpy(pch, pch, strlen(pch)-1);
+                            break;
                         }
                         else if(pch[i] >= 65 && pch[i] <= 90 || pch[i] >= 97 && pch[i] <= 122 || pch[i] == '-'){
                             str.push(tolower(pch[i]));

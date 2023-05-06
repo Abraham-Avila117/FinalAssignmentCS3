@@ -16,7 +16,7 @@ using namespace std;
 
 template <class T>
 struct Node{
-    int rank = 0;
+    int length = 0;
     T item;
     Node<T>* next;
     Node<T>* tail;
@@ -29,28 +29,33 @@ public:
     Hash_chain(T, int);
     
     int getSize()const;     // gets size of hash table
-    T* search(int)const;    // searches the item given a hash index
-    int search(T)const;     // searches the hash index given an item
+    T search(int)const;    // searches the item given a hash index
+    int search(T);     // searches the hash index given an item
     void insert(T, int);    // insertion to hash table
-    void insertCharArray(char*, int);   //insertion specific to char*
+    void insertCharArray(char*, int);   // insertion specific to char*
     void print()const;          // prints the entire table
     void printIdx(int)const;    // prints a specific hash index item and its linklist
     bool isEmpty()const;        // checks if hash table is empty
+    bool isFull(Node<T>[], int)const;
     bool exceedSize(int)const;  // function to prevent out of range array access
     bool isIn(T, int)const;     // checks if the given itam and hash index is in the table
     bool isInChar(char*,int)const; // this is specific to char* isIn function
+    void optimize();
 
     ~Hash_chain();
-
 private:
     Node<T>* array;
     T buffer;
     int size;
+    void reSize(int&, Node<T>[]);
+    void rehash(T, int, Node<T>[]);
+    int nullSum(Node<T>[], int);
+    // int nullSum();
 };
 
 template <class T>
 Hash_chain<T>::Hash_chain(){
-    size = 1402895;
+    size = 1000;
     buffer = nullptr;
     array = new Node<T>[size];
     assert(array!=nullptr);
@@ -59,7 +64,6 @@ Hash_chain<T>::Hash_chain(){
         array[i].next = nullptr;
         array[i].tail = nullptr;
     }
-        
 }
 
 template <class T>
@@ -81,27 +85,115 @@ int Hash_chain<T>::getSize()const{
 }
 
 template <class T>
-T* Hash_chain<T>::search(int hashIdx)const{
+T Hash_chain<T>::search(int hashIdx)const{
     return array[hashIdx].item;
 }
 
 template <class T>
-int Hash_chain<T>::search(T findItem)const{
-    Node<T>* tmp;
-    for(int i = 0; i < size; i++){
-        if(strcmp(array[i].item, findItem) == 0){
-            return i;
-        }
-        else{
-            tmp = array[i].next;
-            while(tmp != nullptr){
-                if(strcmp(tmp->item, findItem) == 0)
-                    return i;
-                tmp = tmp->next;
-            }
-        }
+int Hash_chain<T>::search(T findItem){
+    int sum = 0;
+    for(int i = 0; i < strlen(findItem); i++){
+        sum += findItem[i];
     }
-    return -1;
+    return sum%size;
+}
+
+template <class T>
+void Hash_chain<T>::reSize(int& oldSize, Node<T> oldList[]){
+    int sum = 0, idx = 0, prevSize = oldSize, newSize = oldSize - 1;
+    char* charTmp = nullptr;
+
+    // temperary if statement
+    if(newSize <= 0 || newSize > 1000000){
+        cout << size << endl;
+        cout << "something went wrong" << endl;
+        exit(1);
+    }
+
+    Node<T>* newArray = new Node<T>[newSize], *curr;
+
+    for(int i = 0; i < newSize; i++){
+        newArray[i].item = buffer;
+        newArray[i].next = nullptr;
+        newArray[i].tail = nullptr;
+    }
+
+    for(int i = 0; i < prevSize; i++){
+
+        if(oldList[i].item == nullptr) continue;
+
+        charTmp = oldList[i].item;
+        for(int j = 0; j < strlen(charTmp); j++){
+            sum += charTmp[j];
+        }
+
+        idx = sum % newSize;
+
+        rehash(charTmp, idx, newArray);
+        curr = oldList[i].next;
+        while(curr != nullptr){
+            charTmp = curr->item;
+            rehash(charTmp, idx, newArray);
+            curr = curr->next;
+        }
+        curr = nullptr;
+        sum = 0;
+    }
+
+    // array = newArray;
+    // for(int i = 0; i < newSize ; i++){
+    //     if(newArray[i].item == nullptr) continue;
+    //     cout << newArray[i].item << "-> ";
+
+    //     curr = newArray[i].next;
+    //     while(curr != nullptr){
+    //         cout << curr->item << ", ";
+    //         curr = curr->next;
+    //     }
+    //     curr = nullptr;
+    // }
+    // cout << "|" << endl;
+    // exit(1);
+    // size = newSize;
+
+    if(!isFull(oldList, newSize)){
+        reSize(newSize, oldList);
+    }else{
+        array = newArray;
+        newArray = nullptr;  
+        size = newSize;      
+    }
+}
+
+template <class T>
+void Hash_chain<T>::rehash(T newItem, int hash, Node<T> list[]){
+    Node<T>* curr;
+    if(list[hash].item == buffer){
+        list[hash].item = newItem;
+        list[hash].length++;
+    }else{
+        if(list[hash].next == nullptr){
+            curr = new Node<T>;
+            assert(curr!=nullptr);
+            curr->item = newItem;
+            curr->next = nullptr;
+            curr->tail = &list[hash];
+            list[hash].next = curr;
+            list[hash].tail = curr;
+            curr = nullptr;
+            list[hash].length++;
+            return;
+        }
+        curr = new Node<T>;
+        assert(curr!=nullptr);
+        curr->item = newItem;
+        curr->next = nullptr;
+        list[hash].tail->next = curr;
+        curr->tail = list[hash].tail;
+        list[hash].tail = curr;
+        curr = nullptr;
+        list[hash].length++;
+    }
 }
 
 template <class T>
@@ -118,29 +210,29 @@ void Hash_chain<T>::insertCharArray(char* newitem, int idx){
                 curr = new Node<T>;
                 assert(curr!=nullptr);
                 curr->item = newitem;
-                curr->rank++;
                 curr->next = nullptr;
                 curr->tail = &array[idx];
                 array[idx].next = curr;
                 array[idx].tail = curr;
                 curr = nullptr;
+                array[idx].length++;
                 return;
             }
 
             curr = new Node<T>;
             assert(curr!=nullptr);
             curr->item = newitem;
-            curr->rank++;
             curr->next = nullptr;
             array[idx].tail->next = curr;
             curr->tail = array[idx].tail;
             array[idx].tail = curr;
             curr = nullptr;
+            array[idx].length++;
             return;   
         }
         else if(array[idx].item == buffer){
             array[idx].item = newitem;
-            array[idx].rank++;
+            array[idx].length++;
         }
     }catch(out_of_range& ex){
         cerr << ex.what() << endl;
@@ -162,29 +254,29 @@ void Hash_chain<T>::insert(T newitem, int idx){
                 curr = new Node<T>;
                 assert(curr!=nullptr);
                 curr->item = newitem;
-                curr->rank++;
                 curr->next = nullptr;
                 curr->tail = &array[idx];
                 array[idx].next = curr;
                 array[idx].tail = curr;
                 curr = nullptr;
+                array[idx].length++;
                 return;
             }
 
             curr = new Node<T>;
             assert(curr!=nullptr);
             curr->item = newitem;
-            curr->rank++;
             curr->next = nullptr;
             array[idx].tail->next = curr;
             curr->tail = array[idx].tail;
             array[idx].tail = curr;
             curr = nullptr;
+            array[idx].length++;
             return;   
         }
         else if(array[idx].item == buffer){
             array[idx].item = newitem;
-            array[idx].rank++;
+            array[idx].length++;
         }
     }catch(out_of_range& ex){
         cerr << ex.what() << endl;
@@ -195,6 +287,7 @@ void Hash_chain<T>::insert(T newitem, int idx){
 template <class T>
 void Hash_chain<T>::print()const{
     Node<T>* tmp;
+    int chainLength = 0;
     int nullCounter = 0;
     for(int i = 0; i < size; i++){
         if(array[i].item == nullptr && array[i].next == nullptr){
@@ -202,6 +295,8 @@ void Hash_chain<T>::print()const{
             continue;
         } 
         else{
+            if(array[i].length > chainLength)
+                chainLength = array[i].length;
             cout << array[i].item << " -> ";
             tmp = &array[i];
             tmp = tmp->next;
@@ -213,6 +308,8 @@ void Hash_chain<T>::print()const{
         }
     }
     cout << "Nulls in table is: " << nullCounter << endl;
+    cout << "max chain legnth: " << chainLength << endl;
+    cout << "size of table array: " << size << endl;
     tmp = nullptr;
 }
 
@@ -220,12 +317,10 @@ template <class T>
 void Hash_chain<T>::printIdx(int idx)const{
     Node<T>* tmp = array[idx].next;
 
-    cout << array[idx].item <<
-    " rank: " << array[idx].rank << " -> ";
+    cout << array[idx].item << " -> ";
 
     while(tmp != nullptr){
-        cout << tmp->item << 
-        " rank: " << tmp->rank << ", ";
+        cout << tmp->item << ", ";
         tmp = tmp->next;
     }
     cout << "|" << endl;
@@ -237,18 +332,25 @@ bool Hash_chain<T>::isEmpty()const{
 }
 
 template <class T>
+bool Hash_chain<T>::isFull(Node<T> list[], int otherSize)const{
+    for(int i = 0; i < otherSize; i++){
+        if(list[i].item == buffer)
+            return false;
+    }
+    return true;
+}
+
+template <class T>
 bool Hash_chain<T>::exceedSize(int idx)const{
     return ((idx >= size) ? true : false);
 }
 
-// this function is specific for char* datatypes
 template <class T>
 bool Hash_chain<T>::isIn(T search, int place)const{
     Node<T>* tmp;
     if(array[place].item == buffer)
         return false;
     else if(array[place].item == search){
-        array[place].rank++;
         tmp = nullptr;
         return true;
     }
@@ -256,7 +358,30 @@ bool Hash_chain<T>::isIn(T search, int place)const{
         tmp = array[place].next;
         while(tmp != nullptr){
             if(tmp->item == search){
-                tmp->rank++;
+                tmp = nullptr;
+                return true;
+            }
+            tmp = tmp->next;
+        }
+    }
+    tmp = nullptr;
+    return false;
+}
+
+// this function is specific for char* datatypes
+template <class T>
+bool Hash_chain<T>::isInChar(char* search, int place)const{
+    Node<T>* tmp;
+    if(array[place].item == nullptr)
+        return false;
+    else if(strcmp(array[place].item,search)==0){
+        tmp = nullptr;
+        return true;
+    }
+    else{
+        tmp = array[place].next;
+        while(tmp != nullptr){
+            if(strcmp(tmp->item,search)==0){
                 tmp = nullptr;
                 return true;
             }
@@ -268,36 +393,26 @@ bool Hash_chain<T>::isIn(T search, int place)const{
 }
 
 template <class T>
-bool Hash_chain<T>::isInChar(char* search, int place)const{
-    Node<T>* tmp;
-    if(array[place].item == nullptr)
-        return false;
-    else if(strcmp(array[place].item,search)==0){
-        array[place].rank++;
-        tmp = nullptr;
-        return true;
+void Hash_chain<T>::optimize(){
+    if(!isFull(array, size))
+        reSize(size, array);
+}
+
+template <class T>
+int Hash_chain<T>::nullSum(Node<T> list[], int otherSize){
+    
+    int nullCounter = 0;
+    for(int i = 0; i < otherSize; i++){
+        if(list[i].item == nullptr)
+            nullCounter++;    
     }
-    else{
-        tmp = array[place].next;
-        while(tmp != nullptr){
-            if(strcmp(tmp->item,search)==0){
-                tmp->rank++;
-                if(tmp->rank > array[place].rank){
-                    char* sw = array[place].item;
-                    int iw = array[place].rank;
-                    array[place].item = tmp->item;
-                    array[place].rank = tmp->rank;
-                    tmp->item = sw;
-                    tmp->rank = iw;
-                }
-                tmp = nullptr;
-                return true;
-            }
-            tmp = tmp->next;
-        }
-    }
-    tmp = nullptr;
-    return false;
+    if(otherSize == 509){
+        cout << "the size of array: "<< otherSize << endl;
+        cout << "number of nulls in array: "<<nullCounter << endl;
+        exit(1);
+    }    
+    cout << nullCounter << endl;
+    return nullCounter;
 }
 
 template <class T>
