@@ -50,10 +50,15 @@ int main(int argc, char** argv){
     output.exceptions(fstream::failbit | fstream::badbit);
     try{
         // output.open(argv[2]);
+        auto ProgramStart = high_resolution_clock::now();
         readFile(input, output, hash_chain);
         // readFile(input, output, hash_probe);
+        auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
-        hash_chain.print(); // should be 5648 elements
+        auto chainOptEnd = high_resolution_clock::now();
+        auto chainDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
+        auto ProgramEnd = high_resolution_clock::now();
+        auto ProgramDuration = duration_cast<nanoseconds>(ProgramEnd-ProgramStart);
         showMenu();
         cin >> choice;
         while(choice != 0){
