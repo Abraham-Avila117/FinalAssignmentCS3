@@ -11,6 +11,8 @@ class Vector{
 public:
     Vector();
     Vector(int);
+    T getTop();
+    T getBottom();
     void push(T); // insert into the vector list
     void remove(T); // delete or pop certain element
     int search(T);  // search for element in list
@@ -45,6 +47,16 @@ Vector<T>::Vector(int max){
 }
 
 template <class T>
+T Vector<T>::getBottom(){
+    return vec[0];
+}
+
+template <class T>
+T Vector<T>::getTop(){
+    return vec[size];
+}
+
+template <class T>
 void Vector<T>::push(T elem){
     if(isFull()){
         maxSize *= 2;
@@ -56,10 +68,12 @@ void Vector<T>::push(T elem){
         delete [] vec;
         vec = tmp;
         tmp = nullptr;
-        vec[size++] = elem;
+        vec[size] = elem;
+        size++;
 
     }else{
-        vec[size++] = elem;
+        vec[size] = elem;
+        size++;
     }
 }
 
@@ -95,7 +109,7 @@ void Vector<T>::pop(){
         cout << "No more elements to pop" << endl;
         return;
     }
-    size--;
+    --size;  
 }
 
 template <class T>

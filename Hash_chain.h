@@ -11,6 +11,7 @@ the table.
 #include <iostream>
 #include <cassert>
 #include <cstring>
+#include "Vector.h"
 
 using namespace std;
 
@@ -47,8 +48,7 @@ private:
     Node<T>* array;
     T buffer;
     int size;
-    void reSize(int&, Node<T>[]);
-    void rehash(T, int, Node<T>[]);
+    void reSize(int);
     int nullSum(Node<T>[], int);
     // int nullSum();
 };
@@ -99,100 +99,78 @@ int Hash_chain<T>::search(T findItem){
 }
 
 template <class T>
-void Hash_chain<T>::reSize(int& oldSize, Node<T> oldList[]){
-    int sum = 0, idx = 0, prevSize = oldSize, newSize = oldSize - 1;
-    char* charTmp = nullptr;
+void Hash_chain<T>::reSize(int oldSize){
+    Vector<T> vec;
+    int sum = 0, idx = 0, newSize = oldSize - 1, numberOfElements = 0;
+    T tmp;
+    Node<T>* newArray = new Node<T>[newSize], *curr = nullptr;  
+    assert(newArray!=nullptr);  
 
-    // temperary if statement
-    if(newSize <= 0 || newSize > 1000000){
-        cout << size << endl;
-        cout << "something went wrong" << endl;
-        exit(1);
-    }
-
-    Node<T>* newArray = new Node<T>[newSize], *curr;
-
-    for(int i = 0; i < newSize; i++){
+    for(int i = 0; i < newSize; i++){ // initalize new list (trust)
         newArray[i].item = buffer;
         newArray[i].next = nullptr;
         newArray[i].tail = nullptr;
+    } 
+
+    for(int i = 0; i < size; i++){          // preserve everything from the previous list (trust)
+        if(array[i].item == buffer) continue;
+        else{
+            vec.push(array[i].item);
+            curr = array[i].next;
+            while(curr != nullptr){
+                vec.push(curr->item);
+                curr = curr->next;
+            }
+            curr = nullptr;            
+        }
     }
-
-    for(int i = 0; i < prevSize; i++){
-
-        if(oldList[i].item == nullptr) continue;
-
-        charTmp = oldList[i].item;
-        for(int j = 0; j < strlen(charTmp); j++){
-            sum += charTmp[j];
-        }
-
-        idx = sum % newSize;
-
-        rehash(charTmp, idx, newArray);
-        curr = oldList[i].next;
-        while(curr != nullptr){
-            charTmp = curr->item;
-            rehash(charTmp, idx, newArray);
-            curr = curr->next;
-        }
-        curr = nullptr;
+    
+    numberOfElements = vec.getsize();
+    for(int i = 0; i < numberOfElements; i++){   // everything from vec list gets re-hashed (trust)
         sum = 0;
+        tmp = vec.getTop();
+        vec.pop();
+        for(int j = 0; j < strlen(tmp); j++){
+            sum += tmp[j];
+        }
+        idx = sum % newSize; 
+
+        if(newArray[idx].item != buffer){
+            if(newArray[idx].next == nullptr){
+                curr = new Node<T>;
+                assert(curr!=nullptr);
+                curr->item = tmp;
+                curr->next = nullptr;
+                curr->tail = &newArray[idx];
+                newArray[idx].next = curr;
+                newArray[idx].tail = curr;
+                curr = nullptr;
+                newArray[idx].length++;
+            }else{
+                curr = new Node<T>;
+                assert(curr!=nullptr);
+                curr->item = tmp;
+                curr->next = nullptr;
+                newArray[idx].tail->next = curr;
+                curr->tail = newArray[idx].tail;
+                newArray[idx].tail = curr;
+                curr = nullptr;
+                newArray[idx].length++;                
+            }
+        }else if(newArray[idx].item == buffer){
+            newArray[idx].item = tmp;
+            newArray[idx].length++;  
+        }
     }
+    vec.clear();
 
-    // array = newArray;
-    // for(int i = 0; i < newSize ; i++){
-    //     if(newArray[i].item == nullptr) continue;
-    //     cout << newArray[i].item << "-> ";
-
-    //     curr = newArray[i].next;
-    //     while(curr != nullptr){
-    //         cout << curr->item << ", ";
-    //         curr = curr->next;
-    //     }
-    //     curr = nullptr;
-    // }
-    // cout << "|" << endl;
-    // exit(1);
-    // size = newSize;
-
-    if(!isFull(oldList, newSize)){
-        reSize(newSize, oldList);
+    if(!isFull(newArray, newSize)){
+        delete [] newArray;
+        reSize(newSize);
     }else{
         array = newArray;
         newArray = nullptr;  
         size = newSize;      
-    }
-}
-
-template <class T>
-void Hash_chain<T>::rehash(T newItem, int hash, Node<T> list[]){
-    Node<T>* curr;
-    if(list[hash].item == buffer){
-        list[hash].item = newItem;
-        list[hash].length++;
-    }else{
-        if(list[hash].next == nullptr){
-            curr = new Node<T>;
-            assert(curr!=nullptr);
-            curr->item = newItem;
-            curr->next = nullptr;
-            curr->tail = &list[hash];
-            list[hash].next = curr;
-            list[hash].tail = curr;
-            curr = nullptr;
-            list[hash].length++;
-            return;
-        }
-        curr = new Node<T>;
-        assert(curr!=nullptr);
-        curr->item = newItem;
-        curr->next = nullptr;
-        list[hash].tail->next = curr;
-        curr->tail = list[hash].tail;
-        list[hash].tail = curr;
-        curr = nullptr;
-        list[hash].length++;
     }
 }
 
@@ -289,6 +267,7 @@ void Hash_chain<T>::print()const{
     Node<T>* tmp;
     int chainLength = 0;
     int nullCounter = 0;
+    int c = 0;
     for(int i = 0; i < size; i++){
         if(array[i].item == nullptr && array[i].next == nullptr){
             nullCounter++;
@@ -298,18 +277,21 @@ void Hash_chain<T>::print()const{
             if(array[i].length > chainLength)
                 chainLength = array[i].length;
             cout << array[i].item << " -> ";
+            c++;
             tmp = &array[i];
             tmp = tmp->next;
             while(tmp != nullptr){
                 cout << tmp->item << ", ";
                 tmp = tmp->next;
+                c++;
             }
             cout << "|" << endl;            
         }
     }
     cout << "Nulls in table is: " << nullCounter << endl;
-    cout << "max chain legnth: " << chainLength << endl;
+    cout << "max chain length: " << chainLength << endl;
     cout << "size of table array: " << size << endl;
+    cout << "Number of elements in table: " << c << endl;
     tmp = nullptr;
 }
 
@@ -334,8 +316,9 @@ bool Hash_chain<T>::isEmpty()const{
 template <class T>
 bool Hash_chain<T>::isFull(Node<T> list[], int otherSize)const{
     for(int i = 0; i < otherSize; i++){
-        if(list[i].item == buffer)
+        if(list[i].item == nullptr)
             return false;
+
     }
     return true;
 }
@@ -395,22 +378,16 @@ bool Hash_chain<T>::isInChar(char* search, int place)const{
 template <class T>
 void Hash_chain<T>::optimize(){
     if(!isFull(array, size))
-        reSize(size, array);
+        reSize(size);
 }
 
 template <class T>
 int Hash_chain<T>::nullSum(Node<T> list[], int otherSize){
-    
     int nullCounter = 0;
     for(int i = 0; i < otherSize; i++){
         if(list[i].item == nullptr)
             nullCounter++;    
-    }
-    if(otherSize == 509){
-        cout << "the size of array: "<< otherSize << endl;
-        cout << "number of nulls in array: "<<nullCounter << endl;
-        exit(1);
-    }    
+    }  
     cout << nullCounter << endl;
     return nullCounter;
 }

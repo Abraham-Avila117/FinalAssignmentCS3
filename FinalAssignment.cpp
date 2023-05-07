@@ -52,7 +52,8 @@ int main(int argc, char** argv){
         // output.open(argv[2]);
         readFile(input, output, hash_chain);
         // readFile(input, output, hash_probe);
-        // hash_chain.optimize();
+        hash_chain.optimize();
+        hash_chain.print(); // should be 5648 elements
         showMenu();
         cin >> choice;
         while(choice != 0){
@@ -307,33 +308,33 @@ int pow(int x, int n) {
     return result;
 }
 
-char* rightLine(string file_path, string start_string, string end_string)
-{
-    char* content = new char[MAX];
-    memset(content, 0, MAX);
+// char* rightLine(string file_path, string start_string, string end_string)
+// {
+//     char* content = new char[MAX];
+//     memset(content, 0, MAX);
 
-    bool found_start_string = false;
+//     bool found_start_string = false;
 
-    ifstream file(file_path);
-    if (!file) {
-        return "fail";
-    }
+//     ifstream file(file_path);
+//     if (!file) {
+//         return "fail";
+//     }
 
-    string line;
-    while (getline(file, line)) {
-        if (found_start_string) {
-            if (line.find(end_string) != string::npos) {
-                return content;
-            } else {
-                strcat(content, (line + "\n").c_str());
-            }
-        } else if (line.find(start_string) != string::npos) {
-            found_start_string = true;
-        }
-    }
+//     string line;
+//     while (getline(file, line)) {
+//         if (found_start_string) {
+//             if (line.find(end_string) != string::npos) {
+//                 return content;
+//             } else {
+//                 strcat(content, (line + "\n").c_str());
+//             }
+//         } else if (line.find(start_string) != string::npos) {
+//             found_start_string = true;
+//         }
+//     }
 
-    return "fail";
-}
+//     return "fail";
+// }
 
 void showMenu(){
     cout << "Enter for the following: "<< endl;
