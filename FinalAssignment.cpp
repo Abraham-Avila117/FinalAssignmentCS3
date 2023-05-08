@@ -45,7 +45,7 @@ int main(int argc, char** argv){
         // output.open(argv[2]);
         auto ProgramStart = high_resolution_clock::now();
         readFile(input, output, hash_chain);
-        // readFile(input, output, hash_probe);
+        readFile(input, output, hash_probe);
         auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
         auto chainOptEnd = high_resolution_clock::now();

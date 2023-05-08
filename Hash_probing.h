@@ -111,7 +111,7 @@ void Hash_probe<T>::insert(T newitem, int idx){
         double test = size_count/size;
         if (test > 0.75)
         {
-            this-> Hash_probe = Hash_probe(this->Hash_probe, size+1);
+            this->Hash_probe<T> = Hash_probe(this->Hash_probe, size+1);
         }
             while(T_F)
             {
@@ -142,14 +142,12 @@ void Hash_probe<T>::insert(T newitem, int idx){
 
 template <class T>
 void Hash_probe<T>::print()const{
-   T *temp;
     for(int i = 0; i < size; i++){
-        temp = array[i];
-        if(temp == buffer) continue;
+        if(array[i] == buffer) continue;
         else{
-            cout << temp << " -> "<< temp;
-            cout << "|" << endl;
+            cout << array[i] << " ";
         }
+        cout << endl;
     }
 }
 
