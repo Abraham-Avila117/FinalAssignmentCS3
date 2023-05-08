@@ -6,14 +6,12 @@
 
     object for main will be hash
     *1. (Abraham) Hash table comprising of Open hasing with chaining (I-VI) 
-        *1a. Count the number of occurences of the words/strings in the section 
 
-        1b. Answer (b) and (c) in assignment spec  
+        1. Answer (b) and (c) in assignment spec  
 
     *2. (Ari) Linear probing (VII-XII)
-        2a. Count the number of occurences of the words/strings in the section
 
-        2b. Answer question (a), (c), and (d) in assignment spec
+        1 Answer question (a), (c), and (d) in assignment spec
 
     *3. (Connor) In IX, user must be prompt to do a word search, and use the Rabin-Karp pattern
         matching and Horner's rule for the rolling hash. Display the word count and positions 
