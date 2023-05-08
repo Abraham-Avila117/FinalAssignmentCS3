@@ -76,13 +76,14 @@ void Hash_probe<T>::insert(T newitem, int idx){
             while(T_F)
             {
              if(array[idx].item == buffer){
-                 Probe_Node<T> prob = *new Probe_Node<T>;
-                        //assert(prob!=null);
-                 prob.item = newitem;
-                 prob.num = 1;
-                        array[idx] = prob;
-                        T_F = false;
-                    }
+                //  Probe_Node<T> prob = *new Probe_Node<T>;
+                //         //assert(prob!=null);
+                //  prob.item = newitem;
+                //  prob.num = 1;
+                //         array[idx] = prob;
+                //         T_F = false;
+                
+                }
          else if(array[idx].item == newitem){
                     array[idx].item = newitem;
                     array[idx].num++;
