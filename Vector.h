@@ -101,6 +101,7 @@ int Vector<T>::search(T elem){
             return i;
         }
     }
+    return -1;
 }
 
 template <class T>
