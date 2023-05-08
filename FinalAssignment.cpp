@@ -24,13 +24,6 @@ void showMenu();
 const int MAX = 1000000;
 int sentenceCount = 0;
 
-struct Occur{
-    char* word;
-    int rank = 0;
-    Occur* next;
-};
-
-
 int main(int argc, char** argv){
 
     int choice, hash;
@@ -171,6 +164,7 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
                     tmp = str.getList();
                     if(strcmp(tmp, "\0")!=0){
                         h.insertCharArray(tmp, r%h.getSize());
+
                     }
                     str.clear();
                     r = 0;      
@@ -313,7 +307,7 @@ int pow(int x, int n) {
     return result;
 }
 
-// char* rightLine(string file_path, string start_string, string end_string)
+// const char* rightLine(string file_path, string start_string, string end_string)
 // {
 //     char* content = new char[MAX];
 //     memset(content, 0, MAX);
