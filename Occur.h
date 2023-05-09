@@ -170,8 +170,8 @@ void Occur<T>::sort(Occurence<T> *array, int begin, int end){
     if (begin >= end)
         return;
     int mid = begin + (end - begin) / 2;
-    Sort(array, begin, mid);
-    Sort(array, mid + 1, end);
+    sort(array, begin, mid);
+    sort(array, mid + 1, end);
     merge(array, begin, mid, end);
 }
 
@@ -180,8 +180,8 @@ void Occur<T>::sort(){
     if (0 >= size)
         return;
     int mid = 0 + (size - 0) / 2;
-    Sort(vec, 0, mid);
-    Sort(vec, mid + 1, size);
+    sort(vec, 0, mid);
+    sort(vec, mid + 1, size);
     merge(vec, 0, mid, size);
 }
 
@@ -196,7 +196,7 @@ void Occur<T>::merge(Occurence<T> *array, int const left, int const mid, int con
  
     // Copy data to temp arrays
     for (int i = 0; i < subArrayOne; i++)
-        leftArray[i] = array[left + i].rank;
+        leftArray[i] = array[left + i];
     for (int j = 0; j < subArrayTwo; j++)
         rightArray[j] = array[mid + 1 + j];
  
