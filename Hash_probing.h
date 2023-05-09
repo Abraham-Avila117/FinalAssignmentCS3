@@ -24,6 +24,7 @@ public:
     Hash_probe(T, int);
     int getSize()const;
     void insert(T, int);
+    void resize(int);
     int search(T, int);
     void print()const;
     bool isEmpty()const;
@@ -91,11 +92,40 @@ Hash_probe<T>::Hash_probe(Hash_probe old_probe, int new_size)
         for(int i=0; i < old_probe.size; i++)
         {
             if(old_probe.array[i]!=buffer)
-                this-> Hash_probe.insert(old_probe.array[i], i%new_size);
+                insert(old_probe.array[i], i%new_size);
                 }
     }
 }
 
+template <class T>
+void Hash_probe<T>::resize(int new_size)
+{
+    T * temp= array;
+    array = new T [new_size];
+if (new_size>size)
+{
+for(int i = 0; i < size; i++){
+    array[i] = temp[i];
+}
+for(int i=size; i<new_size; i++)
+{
+    array[i]= buffer;
+}
+}
+else
+{
+    for(int i = 0; i < size; i++)
+    {
+    array[i] = buffer;
+}
+    for(int i=0; i < size; i++)
+    {
+        if(temp[i]!=buffer)
+            insert(temp[i], i%new_size);
+            }
+}
+    size = new_size;
+}
 template <class T>
 int Hash_probe<T>::getSize()const{
     return size;
@@ -111,7 +141,7 @@ void Hash_probe<T>::insert(T newitem, int idx){
         double test = size_count/size;
         if (test > 0.75)
         {
-            this->Hash_probe<T> = Hash_probe(this->Hash_probe, size+1);
+            resize(size+1);
         }
             while(T_F)
             {
@@ -145,9 +175,8 @@ void Hash_probe<T>::print()const{
     for(int i = 0; i < size; i++){
         if(array[i] == buffer) continue;
         else{
-            cout << array[i] << " ";
+            cout << array[i] << "|" << endl;
         }
-        cout << endl;
     }
 }
 
