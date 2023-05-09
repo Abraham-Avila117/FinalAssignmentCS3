@@ -16,8 +16,9 @@ using namespace chrono;
 void karpRabin(string pattern, const char inputText[], int primeInput);
 int pow(int x, int n);
 char* rightLine(string file_path, string start_string, string end_string);
-void readFile(ifstream&, ofstream&, Hash_chain<char*>&);
-void readFile(ifstream&, ofstream&, Hash_probe<char*>&);
+void readFile(ifstream&, Hash_chain<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&);
 bool checkTitle(char*);
 void showMenu();
 
@@ -27,8 +28,8 @@ int sentenceCount = 0;
 int main(int argc, char** argv){
 
     int choice, hash;
-    Hash_chain<char *> hash_chain(nullptr, 1000);
-    Hash_probe<char *> hash_probe(nullptr, 1000);
+    Hash_chain<char *> hash_chain(nullptr, 500);
+    Hash_probe<char *> hash_probe(nullptr, 600);
     char* word = new char[255], *found;
 
     ifstream input;
@@ -42,16 +43,24 @@ int main(int argc, char** argv){
     }
     output.exceptions(fstream::failbit | fstream::badbit);
     try{
-        // output.open(argv[2]);
         auto ProgramStart = high_resolution_clock::now();
-        readFile(input, output, hash_chain);
-        readFile(input, output, hash_probe);
+        readFile(input, hash_chain);
+        readFile(input, hash_probe);
+        readFile(input, hash_probe, hash_chain);
+        readFile(input, hash_probe);
         auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
         auto chainOptEnd = high_resolution_clock::now();
         auto chainDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
         auto ProgramEnd = high_resolution_clock::now();
         auto ProgramDuration = duration_cast<nanoseconds>(ProgramEnd-ProgramStart);
+
+        output.open(argv[2], ios::out);
+        streambuf* stream_buffer_cerr = cerr.rdbuf();
+        streambuf* stream_buffer_cout = cout.rdbuf();
+        streambuf* stream_buffer_output = output.rdbuf();
+        cerr.rdbuf(stream_buffer_output);       
+
         showMenu();
         cin >> choice;
         while(choice != 0){
@@ -62,49 +71,71 @@ int main(int argc, char** argv){
                     cin >> hash;
                     found = hash_chain.search(hash);
                     cout << "The word is: " << found << endl;
+                    break;
                 case 2:
                     // perform hash look up (Adventures VIII-XII)
+                    cout << "Enter hash index: ";
+                    cin >> hash;
+                    found = hash_probe.search(hash);
+                    cout << "The word is: " << found << endl;
+                    break;
                 case 3:
                     // search for a word (Adventure IX)
+                    break;
                 case 4:
                     // print hash table (chaining)
                     hash_chain.print();
+                    break;
                 case 5:
                     // print hash table (linear probing)
                     hash_probe.print();
+                    break;
                 case 6:
                     // look up index in hash table (chaining)
                     cout << "Enter word in hash table (chaining) for index" << endl;
                     cin >> word;
                     hash = hash_chain.search(word);
                     cout << "The index for " << word << " is: " << hash << endl;
+                    break;
                 case 7:
                     // look up index in hash table (linear probing)
+                    cout << "Enter word in hash table (chaining) for index" << endl;
+                    cin >> word;
+                    // hash = hash_probe.search(word);
+                    cout << "The index for " << word << " is: " << hash << endl;
+                    break;
                 case 8:
                     // output the number of sentences in the text
                     cout << "There are " << sentenceCount << " sentences in ths text." << endl;
+                    break;
                 case 9:
                     // output the most occuring words (top 80)
+
+                    break;
                 case 10:
                     // output the least occuring words (bottom 80)
+
+                    break;
                 case 99:
                     // output everything
-                    cout << "Linear Probing occupency used: " << endl;
-                    cout << "Hash chaning length optimality was " << endl;
-                    cout << "Hash that was use: " << endl;
-                    cout << "Collision resolision for linear probing was "<< endl;
-                    cout << "h-files were used" << endl;
-                    cout << "Most occuring word was" << endl;
-                    cout << "Least occuring word was" << endl;
-                    cout << "Number of sentences in the text was" << endl;
-                    cout << "Run time for getting data: " << endl;
+                    cerr << "Linear Probing occupency used: " << endl;
+                    cerr << "Hash chaning length optimality was 35" << endl;
+                    cerr << "Hash that was use: r%h.getSize()" << endl;
+                    cerr << "Collision resolision for linear probing was "<< endl;
+                    cerr << "h-files were used: yes" << endl;
+                    cerr << "Most occuring word was " << endl;
+                    cerr << "Least occuring word was " << endl;
+                    cerr << "Number of sentences in the text was: " << sentenceCount << endl;
+                    cerr << "Run time for getting data: " << endl;
+                    break;
             } 
             cout << endl;
+            cin.ignore();
             showMenu(); 
             cin >> choice;      
         } 
         input.close();
-        // output.close();
+        output.close();
     }catch(fstream::failure ex){
         cerr << "File failure in main: " << ex.what() << endl;
     }
@@ -112,7 +143,7 @@ int main(int argc, char** argv){
     return 0;
 }
 
-void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
+void readFile(ifstream& infile, Hash_chain<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
@@ -164,7 +195,6 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
                     tmp = str.getList();
                     if(strcmp(tmp, "\0")!=0){
                         h.insertCharArray(tmp, r%h.getSize());
-
                     }
                     str.clear();
                     r = 0;      
@@ -178,11 +208,9 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_chain<char*>& h){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, ofstream& outfile, Hash_probe<char*>& h){
+void readFile(ifstream& infile, Hash_probe<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
-    char* fname = new char[fsize];
-    assert(fname!=nullptr);
     char* sname = new char[ssize];
     assert(sname!=nullptr);
     char *tmp = nullptr, *pch;
@@ -192,18 +220,27 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_probe<char*>& h){
 
         infile >> sname[0];
         infile.getline(&sname[1], ssize, ' ');
-        cout << sname << endl;
         pch = strtok(sname, d);
 
         while(pch != nullptr){
-            if(strcmp(pch, "***")==0){
-                delete [] fname;
+            if(strcmp(pch, "IX.")==0){
                 delete [] sname;
                 str.clear();
-                return; 
-            }else if(strcmp(pch, "IX.")==0){
-                cout << "RnP here" << endl;
+                return;
+            }else if(strcmp(pch, "***")==0){
+                delete [] sname;
+                str.clear();
+                return;
             }
+                
+            // if(strcmp(pch, "***")==0){
+            //     delete [] sname;
+            //     str.clear();
+            //     return; 
+            // }else if(strcmp(pch, "IX.")==0){
+            //     cout << "RnP here" << endl;
+            // }
+
             for(int i=0; i < strlen(pch); i++){
                 if(pch[i] == '-' && pch[i+1] == '-'){
                     pch[i] = ' ';
@@ -234,7 +271,76 @@ void readFile(ifstream& infile, ofstream& outfile, Hash_probe<char*>& h){
             pch = strtok(nullptr, d);
         }
     }
-    delete [] fname;
+    delete [] sname;
+}
+
+void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
+    Vector<char> str;
+    int fsize = 81, ssize = 100, r = 0;
+    char* sname = new char[ssize];
+    assert(sname!=nullptr);
+    char *tmp = nullptr, *pch;
+    char d[] = " \n\'\"\r,;:";
+    string pattern;
+    bool chain = false, probe = true;
+
+    cout << "Enter word pattern: ";
+    cin >> pattern;
+
+    while(!infile.eof()){
+
+        infile >> sname[0];
+        infile.getline(&sname[1], ssize, '\n');
+        karpRabin(pattern, tmp, 11);
+
+        pch = strtok(sname, d);
+
+        while(pch != nullptr){
+            
+            if(strcmp(pch, "X.")==0){
+                delete [] sname;
+                str.clear();
+                return;
+            }
+
+            for(int i=0; i < strlen(pch); i++){
+                if(pch[i] == '-' && pch[i+1] == '-'){
+                    pch[i] = ' ';
+                    pch[i+1] = ' ';
+                    break;
+                }
+                else if(isalpha(pch[i]) || pch[i] == '-'){
+                    str.push(tolower(pch[i]));
+                    pch[i] = tolower(pch[i]);
+                    r += tolower(pch[i]);
+                }
+                else if(pch[i] == '.' || pch[i] == '?' || pch[i] == '!'){
+                    if(!checkTitle(pch) && str.getsize() > 1){
+                        sentenceCount++;
+                        break;
+                    }
+                }
+            }
+            tmp = str.getList();
+            
+            if(strcmp(tmp, "\0")!=0){
+                if(probe){
+                    hp.insert(tmp, r%hp.getSize());
+                    chain = true;
+                    probe = false;
+                }else if(chain){
+                    hc.insert(tmp, r%hc.getSize());
+                    chain = false;
+                    probe = true;  
+                } 
+            }
+            
+            str.clear();
+            r = 0;      
+            tmp = nullptr;  
+            pch = strtok(nullptr, d);
+        }
+    }
     delete [] sname;
 }
 

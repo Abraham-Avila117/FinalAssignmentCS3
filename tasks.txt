@@ -11,7 +11,7 @@
 
     *2. (Ari) Linear probing (VII-XII)
 
-        1 Answer question (a), (c), and (d) in assignment spec
+        1. Answer question (a), (c), and (d) in assignment spec
 
     *3. (Connor) In IX, user must be prompt to do a word search, and use the Rabin-Karp pattern
         matching and Horner's rule for the rolling hash. Display the word count and positions 
