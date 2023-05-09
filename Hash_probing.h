@@ -26,6 +26,8 @@ public:
     void insert(T, int);
     void resize(int);
     int search(T, int);
+    int search(T);
+    T search(int);
     void print()const;
     bool isEmpty()const;
     bool exceedSize(int)const;
@@ -211,6 +213,51 @@ int Hash_probe<T>::search(T search, int start){
             return end;
     }
     return -1;
+}
+template <class T>
+int Hash_probe<T>::search(T search){
+    int end = 0;
+    bool T_F = true;
+    bool loop = false;
+        while (T_F) {
+    end++;
+    if (exceedSize(end))
+    {
+        end=0;
+        if(loop)
+            return -1;
+        loop=true;
+        
+    }
+    if (search == array[end])
+            return end;
+    }
+    return -1;
+}
+
+template <class T>
+T Hash_probe<T>::search(int start)
+{
+    int end = start;
+    bool T_F = true;
+    bool loop = false;
+    if ( array[start]!= buffer)
+            return array[start];
+    else
+            while (T_F) {
+        end++;
+        if (exceedSize(end))
+        {
+            end=0;
+            if(loop)
+                return buffer;
+            loop=true;
+            
+        }
+        if ( array[end]!= buffer)
+                return array[end];
+        }
+        return buffer;
 }
 template <class T>
 Hash_probe<T>::~Hash_probe(){
