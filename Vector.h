@@ -1,5 +1,5 @@
-#ifndef nms_vector_h
-#define nms_vector_h 
+#ifndef vector_h
+#define vector_h 
 
 #include <iostream>
 #include <cassert>

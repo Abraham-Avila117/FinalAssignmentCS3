@@ -7,23 +7,24 @@
 #include <cctype>
 #include <cstring>
 #include "Hash_chain.h"
-#include "Vector.h"
 #include "Hash_probing.h"
+#include "Vector.h"
+// #include "Occur.h"
 
 using namespace std;
 using namespace chrono;
 
-void karpRabin(string pattern, const char inputText[], int primeInput);
-int pow(int x, int n);
-char* rightLine(string file_path, string start_string, string end_string);
+void karpRabin(string, const char[], int);
+int pow(int, int);
+char* rightLine(string, string, string);
 void readFile(ifstream&, Hash_chain<char*>&);
 void readFile(ifstream&, Hash_probe<char*>&);
 void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&);
 bool checkTitle(char*);
 void showMenu();
 
-const int MAX = 1000000;
 int sentenceCount = 0;
+// Occur<char *> occur;
 
 int main(int argc, char** argv){
 
@@ -81,7 +82,8 @@ int main(int argc, char** argv){
                     cout << "The word is: " << found << endl;
                     break;
                 case 3:
-                    // search for a word (Adventure IX)
+                    // report on RKP Algo run (Adventure IX)
+
                     break;
                 case 4:
                     // print hash table (chaining)
@@ -195,6 +197,7 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                     }
                     tmp = str.getList();
                     if(strcmp(tmp, "\0")!=0){
+                        // occur.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
@@ -257,6 +260,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
+                // occur.push(tmp);
                 h.insert(tmp, r%h.getSize());
             }
             
@@ -320,6 +324,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
+                // occur.push(tmp);
                 if(probe){
                     hp.insert(tmp, r%hp.getSize());
                     chain = true;
@@ -414,7 +419,7 @@ void showMenu(){
     cout << "(0) to exit" << endl;
     cout << "(1) to perform hash look up (Adventures I-VII)" << endl;
     cout << "(2) to perform hash look up (Adventures VIII-XII)" << endl;
-    cout << "(3) to search for a word (Adventure IX)" << endl;
+    cout << "(3) to see RKP report (Adventure IX)" << endl;
     cout << "(4) to print hash table (chaining)" << endl;
     cout << "(5) to print hash table (linear probing)" << endl;
     cout << "(6) to look up index in hash table (chaining)" << endl;

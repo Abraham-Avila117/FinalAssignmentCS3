@@ -1,5 +1,5 @@
-#ifndef occur_h
-#define occur_h
+#ifndef OCCUR_H
+#define OCCUR_H
 
 using namespace std;
 
@@ -274,5 +274,6 @@ template <class T>
 Occur<T>::~Occur(){
 delete [] vec;
 }
+
 #endif
 
