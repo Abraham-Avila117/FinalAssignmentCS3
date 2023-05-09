@@ -28,8 +28,8 @@ int sentenceCount = 0;
 int main(int argc, char** argv){
 
     int choice, hash;
-    Hash_chain<char *> hash_chain(nullptr, 500);
-    Hash_probe<char *> hash_probe(nullptr, 600);
+    Hash_chain<char *> hash_chain(nullptr, 1000);
+    Hash_probe<char *> hash_probe(nullptr, 1000);
     char* word = new char[255], *found;
 
     ifstream input;
@@ -48,6 +48,7 @@ int main(int argc, char** argv){
         readFile(input, hash_probe);
         readFile(input, hash_probe, hash_chain);
         readFile(input, hash_probe);
+        input.close();
         auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
         auto chainOptEnd = high_resolution_clock::now();
@@ -126,7 +127,7 @@ int main(int argc, char** argv){
                     cerr << "Most occuring word was " << endl;
                     cerr << "Least occuring word was " << endl;
                     cerr << "Number of sentences in the text was: " << sentenceCount << endl;
-                    cerr << "Run time for getting data: " << endl;
+                    cerr << "Run time for getting data: " << ProgramDuration.count() << endl;
                     break;
             } 
             cout << endl;
@@ -134,12 +135,11 @@ int main(int argc, char** argv){
             showMenu(); 
             cin >> choice;      
         } 
-        input.close();
         output.close();
     }catch(fstream::failure ex){
         cerr << "File failure in main: " << ex.what() << endl;
     }
-
+    cout << "Program ended. Goodbye!" << endl;
     return 0;
 }
 
@@ -171,6 +171,7 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                         delete [] fname;
                         delete [] sname;
                         str.clear();
+                        cout << "I - VII......done" << endl;
                         return; 
                     }
 
@@ -226,20 +227,14 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
             if(strcmp(pch, "IX.")==0){
                 delete [] sname;
                 str.clear();
+                cout << "VII - IX......done" << endl;
                 return;
             }else if(strcmp(pch, "***")==0){
                 delete [] sname;
                 str.clear();
+                cout << "X - END......done" << endl;
                 return;
             }
-                
-            // if(strcmp(pch, "***")==0){
-            //     delete [] sname;
-            //     str.clear();
-            //     return; 
-            // }else if(strcmp(pch, "IX.")==0){
-            //     cout << "RnP here" << endl;
-            // }
 
             for(int i=0; i < strlen(pch); i++){
                 if(pch[i] == '-' && pch[i+1] == '-'){
@@ -291,7 +286,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
 
         infile >> sname[0];
         infile.getline(&sname[1], ssize, '\n');
-        karpRabin(pattern, tmp, 11);
+        karpRabin(pattern, sname, 11);
 
         pch = strtok(sname, d);
 
@@ -300,6 +295,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
             if(strcmp(pch, "X.")==0){
                 delete [] sname;
                 str.clear();
+                cout << "IX - X......done" << endl;
                 return;
             }
 
@@ -412,34 +408,6 @@ int pow(int x, int n) {
     }
     return result;
 }
-
-// const char* rightLine(string file_path, string start_string, string end_string)
-// {
-//     char* content = new char[MAX];
-//     memset(content, 0, MAX);
-
-//     bool found_start_string = false;
-
-//     ifstream file(file_path);
-//     if (!file) {
-//         return "fail";
-//     }
-
-//     string line;
-//     while (getline(file, line)) {
-//         if (found_start_string) {
-//             if (line.find(end_string) != string::npos) {
-//                 return content;
-//             } else {
-//                 strcat(content, (line + "\n").c_str());
-//             }
-//         } else if (line.find(start_string) != string::npos) {
-//             found_start_string = true;
-//         }
-//     }
-
-//     return "fail";
-// }
 
 void showMenu(){
     cout << "Enter for the following: "<< endl;
