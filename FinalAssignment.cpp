@@ -9,7 +9,7 @@
 #include "Hash_chain.h"
 #include "Hash_probing.h"
 #include "Vector.h"
-// #include "Occur.h"
+#include "Occur.h"
 
 using namespace std;
 using namespace chrono;
@@ -17,20 +17,20 @@ using namespace chrono;
 void karpRabin(string, const char[], int);
 int pow(int, int);
 char* rightLine(string, string, string);
-void readFile(ifstream&, Hash_chain<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&);
+void readFile(ifstream&, Hash_chain<char*>&, Occur<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&, Occur<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&, Occur<char*>&);
 bool checkTitle(char*);
 void showMenu();
 
 int sentenceCount = 0;
-// Occur<char *> occur;
+
 
 int main(int argc, char** argv){
-
+    Occur<char*> occur(100);
     int choice, hash;
-    Hash_chain<char *> hash_chain(nullptr, 1000);
-    Hash_probe<char *> hash_probe(nullptr, 1000);
+    Hash_chain<char *> hash_chain(nullptr, 600);
+    Hash_probe<char *> hash_probe(nullptr, 600);
     char* word = new char[255], *found;
 
     ifstream input;
@@ -45,13 +45,15 @@ int main(int argc, char** argv){
     output.exceptions(fstream::failbit | fstream::badbit);
     try{
         auto ProgramStart = high_resolution_clock::now();
-        readFile(input, hash_chain);
-        readFile(input, hash_probe);
-        readFile(input, hash_probe, hash_chain);
-        readFile(input, hash_probe);
+        readFile(input, hash_chain, occur);
+        // readFile(input, hash_probe, occur);
+        // readFile(input, hash_probe, hash_chain, occur);
+        // readFile(input, hash_probe, occur);
         input.close();
         auto chainOptStart = high_resolution_clock::now();
+        // hash_chain.print();
         hash_chain.optimize();
+        
         auto chainOptEnd = high_resolution_clock::now();
         auto chainDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
         auto ProgramEnd = high_resolution_clock::now();
@@ -145,7 +147,7 @@ int main(int argc, char** argv){
     return 0;
 }
 
-void readFile(ifstream& infile, Hash_chain<char*>& h){
+void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
@@ -195,9 +197,13 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                             }
                         }
                     }
+                    str.print();
+                    cout << str.getsize() << endl;
                     tmp = str.getList();
+                    cout << tmp << endl;
+                    cout << strlen(tmp) << endl;
                     if(strcmp(tmp, "\0")!=0){
-                        // occur.push(tmp);
+                        // occr.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
@@ -212,7 +218,7 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& h){
+void readFile(ifstream& infile, Hash_probe<char*>& h, Occur<char*>& occr){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* sname = new char[ssize];
@@ -260,7 +266,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                // occur.push(tmp);
+                // occr.push(tmp);
                 h.insert(tmp, r%h.getSize());
             }
             
@@ -273,7 +279,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
+void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, Occur<char*>& occr){
     Vector<char> str;
     int fsize = 81, ssize = 100, r = 0;
     char* sname = new char[ssize];
@@ -322,9 +328,11 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
                 }
             }
             tmp = str.getList();
+            // cout << tmp << endl;
+            // cout << strlen(tmp) << endl;
             
             if(strcmp(tmp, "\0")!=0){
-                // occur.push(tmp);
+                // occr.push(tmp);
                 if(probe){
                     hp.insert(tmp, r%hp.getSize());
                     chain = true;
@@ -401,9 +409,9 @@ void karpRabin(string pattern, const char inputText[], int primeInput)
     auto stop = high_resolution_clock::now();
     auto durationR = duration_cast<microseconds>(stop-start);
 
-    cout << "Karp Rabin:" << endl;
-    cout << "Number of occurrences in text is: " << count << endl;
-    cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
+    // cout << "Karp Rabin:" << endl;
+    // cout << "Number of occurrences in text is: " << count << endl;
+    // cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
 }
 
 int pow(int x, int n) {

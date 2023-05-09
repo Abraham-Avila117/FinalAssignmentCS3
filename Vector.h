@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <cctype>
 
 using namespace std;
 
@@ -142,12 +143,22 @@ template <class T>
 T* Vector<T>::getList(){
     T* list = new T[size];
 
-    assert(list!=nullptr);
+    // assert(list!=nullptr);
+    cout << "vector size is: "<<size << endl;
+    cout << "list before copy: " <<list << endl;
+    cout << "strlen before copy " << strlen(list) << endl;
     for(int i = 0; i < size; i++){
-        list[i] = vec[i];
+        if(isalpha(vec[i])){
+            list[i] = vec[i];
+        }
+        cout << vec[i] << endl;
+        cout << list[i] << endl;
     }
+    cout << "list: " << list << endl;
+    cout << "strlen(list): " << strlen(list) << endl;
     return list;
 }
+
 template <class T>
 int Vector<T>::getsize()const{
     return size;

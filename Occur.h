@@ -1,5 +1,5 @@
-#ifndef occur_h
-#define occur_h
+#ifndef OCCUR_H
+#define OCCUR_H
 
 using namespace std;
 
@@ -24,14 +24,14 @@ public:
     void pop();     // remove last element
     void clear();   // clear the list
     bool isEmpty()const; // check if list is empty
-    bool isFull()const;  // check if list is full to increase size
+    bool isFull()const;  // check if list is full to increase size 
     // void print() const;
     void sort();// start the sort
     void sort(Occurence<T> *, int, int); //recersive call for the sort
     void merge(Occurence<T> *, int const, int const,int const); // merge sort fuction
     Occurence<T> * getList();       //get list so far
     T * getWordList();
-    int *getRankList();
+    int getRankList();
     int getsize()const; //get the size of list so far
 
     ~Occur();
@@ -44,14 +44,14 @@ private:
 
 template <class T>
 Occur<T>::Occur(){
- vec = new Occurence<T>[100];
+ vec = new T[100];
  size = 0;
  maxSize = 100;
 }
 
 template <class T>
 Occur<T>::Occur(int zize){
- vec = new Occurence<T>[zize];
+ vec = new T[zize];
  size = 0;
  maxSize = zize;
 }
@@ -78,14 +78,13 @@ int Occur<T>::getBottomRank(){
 template <class T>
 void Occur<T>::push(T elem){
     int a = search(elem);
-    bool temp_TF = isFull();
-    if(a == -1)
+    if(elem == -1)
     {
-        if(temp_TF)
+        if(isFull())
         {
             maxSize = maxSize+100;
-            Occurence<T> *temp = new Occurence<T>[maxSize];
-            for(int i=0; i< size-1; i++)
+            Occurence *temp = new Occurence[maxSize]
+            for(i=0; i< size-1; i++)
             {
                 temp[i].word = vec[i].word;
                 temp[i].rank = vec[i].rank;
@@ -95,7 +94,7 @@ void Occur<T>::push(T elem){
             temp =nullptr;
             vec[size].word = elem;
             vec[size].rank = 1;
-            size++;
+            size++; 
         }
         else
         {
@@ -124,14 +123,12 @@ template <class T>
 void Occur<T>::clear(){
     delete [] vec;
     size = 0;
-    vec = new Occurence<T>[maxSize];
+    vec = new Occurence[maxSize];
 }
-
 template <class T>
 bool Occur<T>::isFull()const{
     return (size >= maxSize);
 }
-
 template <class T>
 bool Occur<T>::isEmpty()const{
     return (size <= 0);
@@ -140,26 +137,26 @@ bool Occur<T>::isEmpty()const{
 void Occur<T>::remove(T item)
 {
     int index = search(item);
-    bool temp = isFull();
     if (index != -1)
     {
-        if(temp)
-            for(int i = index; i<size-1; i++)
+        if(isFull)
+            for(i = index; i<size-1; i++)
             {
-                vec[i] = vec[i+1];
+                array[i] = array[i+1]
             }
+            array[size] = nullptr;
              
         size--;
     }
     else
         return;
     
-}
+} 
 
 template <class T>
 void Occur<T>::pop()
 {
-    if(isEmpty())
+    if(isEmpty)
         return;
     else
         size--;
@@ -168,20 +165,20 @@ void Occur<T>::pop()
 template <class T>
 void Occur<T>::sort(Occurence<T> *array, int begin, int end){
     if (begin >= end)
-        return;
+        return; 
     int mid = begin + (end - begin) / 2;
-    sort(array, begin, mid);
-    sort(array, mid + 1, end);
+    Sort(array, begin, mid);
+    Sort(array, mid + 1, end);
     merge(array, begin, mid, end);
 }
 
 template <class T>
 void Occur<T>::sort(){
     if (0 >= size)
-        return;
+        return; 
     int mid = 0 + (size - 0) / 2;
-    sort(vec, 0, mid);
-    sort(vec, mid + 1, size);
+    Sort(vec, 0, mid);
+    Sort(vec, mid + 1, size);
     merge(vec, 0, mid, size);
 }
 
@@ -192,25 +189,25 @@ void Occur<T>::merge(Occurence<T> *array, int const left, int const mid, int con
     int  subArrayTwo = right - mid;
  
     // Create temp arrays
-    Occurence<T> *leftArray = new Occurence<T>[subArrayOne], *rightArray = new Occurence<T> [subArrayTwo];
+    Occurence *leftArray = new Occurence[subArrayOne], *rightArray = new Occurence[subArrayTwo];
  
     // Copy data to temp arrays
     for (int i = 0; i < subArrayOne; i++)
-        leftArray[i] = array[left + i];
+        leftArray[i] = array[left + i].rank;
     for (int j = 0; j < subArrayTwo; j++)
         rightArray[j] = array[mid + 1 + j];
  
-    int indexOfSubArrayOne = 0, indexOfSubArrayTwo = 0;
-    int indexOfMergedArray = left;
+    int indexOfSubArrayOne = 0, indexOfSubArrayTwo = 0; 
+    int indexOfMergedArray = left; 
 
     // Merge the temp arrays back into array
     while (indexOfSubArrayOne < subArrayOne && indexOfSubArrayTwo < subArrayTwo) {
-        if (leftArray[indexOfSubArrayOne].rank <= rightArray[indexOfSubArrayTwo].rank)
+        if (leftArray[indexOfSubArrayOne].rank <= rightArray[indexOfSubArrayTwo].rank) 
         {
             array[indexOfMergedArray] = leftArray[indexOfSubArrayOne];
             indexOfSubArrayOne++;
         }
-        else
+        else 
         {
             array[indexOfMergedArray]= rightArray[indexOfSubArrayTwo];
             indexOfSubArrayTwo++;
@@ -245,10 +242,10 @@ template <class T>
 Occurence<T> * Occur<T>::getList()
 {
     Occurence<T> * list = new Occurence<T> [size];
-    for(int i=0; i< size-1; i++)
+    for(int i=0; i< size-1; i++) 
     {
         list[i]=vec[i];
-    }
+    }   
     return list;
 }
 
@@ -256,20 +253,20 @@ template <class T>
 T * Occur<T>::getWordList()
 {
     T * list = new T[size];
-    for(int i=0; i< size-1; i++)
+    for(int i=0; i< size-1; i++) 
     {
         list[i]=vec[i].word;
-    }
+    }   
     return list;
 }
 template <class T>
-int* Occur<T>::getRankList()
+int Occur<T>::getRankList()
 {
     int * list = new int[size];
-    for(int i=0; i< size-1; i++)
+    for(int i=0; i< size-1; i++) 
     {
         list[i]=vec[i].rank;
-    }
+    }   
     return list;
 }
 
@@ -278,3 +275,4 @@ Occur<T>::~Occur(){
 delete [] vec;
 }
 #endif
+
