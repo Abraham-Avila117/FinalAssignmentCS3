@@ -3,15 +3,25 @@
 #include <cstring>
 #include <cassert>
 #include <chrono>
+#include <cctype>
 
 using namespace std;
 using namespace chrono;
 
 void karpRabin(string pattern, const char inputText[], int primeInput);
 int pow(int x, int n);
-char* rightLine(string file_path, string start_string, string end_string);
-
+const char* rightLine(string file_path, string start_string, string end_string);
 const int MAX = 1000000;
+
+
+int pow(int x, int n, int prime) 
+{
+    int result = 1;
+    for (int i = 0; i < n; i++) {
+        result = (result * x) % prime;
+    }
+    return result;
+}
 
 void karpRabin(string pattern, const char inputText[], int primeInput)
 {
@@ -22,55 +32,62 @@ void karpRabin(string pattern, const char inputText[], int primeInput)
     int tHash = 0;
     int count = 0;
 
-    int i, j;
-
-    for(i=0; i < pLen; i++)
+    if (pLen == 1)
     {
-        pHash = (pattern[i]) % primeInput;
-        tHash = (inputText[i] % primeInput);
+        pHash = toupper(pattern[0]) % primeInput;
+        tHash = toupper(inputText[0]) % primeInput;
+        }
+    else
+    {
+        for (int i = 0; i < pLen; i++)
+        {
+            pHash = (pHash * 256 + toupper(pattern[i])) % primeInput;
+            tHash = (tHash * 256 + toupper(inputText[i])) % primeInput;
+        }
     }
 
-    bool in_word = false;
-    string word;
-    for(i=0; i < tLen; i++)
+
+    for (int i = 0; i <= tLen - pLen; i++)
     {
-        if(isalpha(inputText[i])) {
-            in_word = true;
-            word += tolower(inputText[i]);
-        } else if(in_word) {
-            in_word = false;
-            if(word.size() >= pLen) {
-                bool match = true;
-                for(j = 0; j < pLen; j++) {
-                    if(word[j] != pattern[j]) {
-                        match = false;
-                        break;
-                    }
+        if (pHash == tHash)
+        {
+            bool match = true;
+            for (int j = 0; j < pLen; j++)
+            {
+                if (toupper(inputText[i+j]) != toupper(pattern[j]))
+                {
+                    match = false;
+                    break;
                 }
-                if(match) {
+            }
+            if (match)
+            {
+                if ((i == 0 || !isalnum(inputText[i-1])) && !isalnum(inputText[i+pLen]))
+                {
+                    cout << "Pattern found at index " << i << endl;
                     count++;
                 }
             }
-            word.clear();
+        }
+        if (i < tLen - pLen)
+        {
+            tHash = ((tHash - toupper(inputText[i]) * pow(256, pLen-1, primeInput)) * 256 + toupper(inputText[i+pLen])) % primeInput;
+            if (tHash < 0)
+            {
+                tHash += primeInput;
+            }
         }
     }
+
     auto stop = high_resolution_clock::now();
-    auto durationR = duration_cast<microseconds>(stop-start);
+    auto durationR = duration_cast<microseconds>(stop - start);
 
     cout << "Karp Rabin:" << endl;
     cout << "Number of occurrences in text is: " << count << endl;
     cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
 }
 
-int pow(int x, int n) {
-    int result = 1;
-    for (int i = 0; i < n; i++) {
-        result *= x;
-    }
-    return result;
-}
-
-char* rightLine(string file_path, string start_string, string end_string)
+const char* rightLine(string file_path, string start_string, string end_string)
 {
     char* content = new char[MAX];
     memset(content, 0, MAX);
@@ -79,7 +96,7 @@ char* rightLine(string file_path, string start_string, string end_string)
 
     ifstream file(file_path);
     if (!file) {
-        return "fail";
+        return "";
     }
 
     string line;
@@ -95,7 +112,7 @@ char* rightLine(string file_path, string start_string, string end_string)
         }
     }
 
-    return "fail";
+    return "";
 }
 
 
@@ -109,17 +126,18 @@ int main()
     char in;
     while(run)
     {
-            infile.open(filename, ios::in | ios::binary);
+            infile.open("test.txt", ios::in | ios::binary);
             if(infile && run == true)
             {
-                char* result = rightLine(filename, "IX. THE ADVENTURE OF THE ENGINEER'S THUMB", "X. THE ADVENTURE OF THE NOBLE BACHELOR");
+                const char* result = rightLine(filename, "IX. THE ADVENTURE OF THE ENGINEER'S THUMB", "X. THE ADVENTURE OF THE NOBLE BACHELOR");
+                const char* text = rightLine(filename, "*** START OF THIS PROJECT GUTENBERG EBOOK THE ADVENTURES OF SHERLOCK HOLMES ***", "END OF THIS PROJECT GUTENBERG EBOOK THE ADVENTURES OF SHERLOCK HOLMES");
 
-                infile.seekg(0, infile.end);
-                flen = infile.tellg();
-                infile.seekg(0,infile.beg);
+                // infile.seekg(0, infile.end);
+                // flen = infile.tellg();
+                // infile.seekg(0,infile.beg);
 
-                char text[flen];
-                infile.read(text, flen);
+                // //char text[flen];
+                // infile.read(text, flen);
 
                 infile.close();
 
@@ -137,5 +155,5 @@ int main()
                 run = false;
             }
     }  
-return 0;
+    return 0;
 }
