@@ -373,51 +373,68 @@ void karpRabin(string pattern, const char inputText[], int primeInput)
     int pHash = 0;
     int tHash = 0;
     int count = 0;
-
     int i, j;
 
-    for(i=0; i < pLen; i++)
+    if (pLen == 1)
     {
-        pHash = (pattern[i]) % primeInput;
-        tHash = (inputText[i] % primeInput);
+        pHash = toupper(pattern[0]) % primeInput;
+        tHash = toupper(inputText[0]) % primeInput;
+        }
+    else
+    {
+        for (i = 0; i < pLen; i++)
+        {
+            pHash = (pHash * 256 + toupper(pattern[i])) % primeInput;
+            tHash = (tHash * 256 + toupper(inputText[i])) % primeInput;
+        }
     }
 
-    bool in_word = false;
-    string word;
-    for(i=0; i < tLen; i++)
+
+    for (i = 0; i <= tLen - pLen; i++)
     {
-        if(isalpha(inputText[i])) {
-            in_word = true;
-            word += tolower(inputText[i]);
-        } else if(in_word) {
-            in_word = false;
-            if(word.size() >= pLen) {
-                bool match = true;
-                for(j = 0; j < pLen; j++) {
-                    if(word[j] != pattern[j]) {
-                        match = false;
-                        break;
-                    }
+        if (pHash == tHash)
+        {
+            bool match = true;
+            for (j = 0; j < pLen; j++)
+            {
+                if (toupper(inputText[i+j]) != toupper(pattern[j]))
+                {
+                    match = false;
+                    break;
                 }
-                if(match) {
+            }
+            if (match)
+            {
+                if ((i == 0 || !isalpha(inputText[i-1])) && !isalpha(inputText[i+pLen]))
+                {
                     count++;
                 }
             }
-            word.clear();
+        }
+
+        if (i < tLen - pLen)
+        {
+            tHash = ((tHash - toupper(inputText[i]) * pow(256, pLen-1, primeInput)) * 256 + toupper(inputText[i+pLen])) % primeInput;
+            if (tHash < 0)
+            {
+                tHash += primeInput;
+            }
         }
     }
-    auto stop = high_resolution_clock::now();
-    auto durationR = duration_cast<microseconds>(stop-start);
 
-    // cout << "Karp Rabin:" << endl;
-    // cout << "Number of occurrences in text is: " << count << endl;
-    // cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
+    auto stop = high_resolution_clock::now();
+    auto durationR = duration_cast<microseconds>(stop - start);
+
+    cout << "Karp Rabin:" << endl;
+    cout << "Number of occurrences in text is: " << count << endl;
+    cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
 }
 
-int pow(int x, int n) {
+int pow(int x, int n, int prime) 
+{
     int result = 1;
     for (int i = 0; i < n; i++) {
-        result *= x;
+        result = (result * x) % prime;
     }
     return result;
 }
