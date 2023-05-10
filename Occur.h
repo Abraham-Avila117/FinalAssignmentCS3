@@ -131,9 +131,6 @@ void Occur<T>::clear(){
 
 template <class T>
 bool Occur<T>::isFull()const{
-    bool a = (size == maxSize);
-    if(a)
-        cout<<"resize"<<endl;
     return (size == maxSize);
 }
 

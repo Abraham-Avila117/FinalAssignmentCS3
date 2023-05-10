@@ -125,11 +125,12 @@ int main(int argc, char** argv){
                     break;
                 case 9:
                     // output the most occuring words (top 80)
+                    occur.print();
 
                     break;
                 case 10:
                     // output the least occuring words (bottom 80)
-
+                    occur.print();
                     break;
                 case 99:
                     // output everything
@@ -210,8 +211,9 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                         }
                     }
                     tmp = str.getList();
+                    cout << tmp << endl;
                     if(strcmp(tmp, "\0")!=0){
-                        // occur.push(tmp);
+                        occur.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
@@ -274,7 +276,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                // occur.push(tmp);
+                occur.push(tmp);
                 h.insert(tmp, r%h.getSize());
             }
             
