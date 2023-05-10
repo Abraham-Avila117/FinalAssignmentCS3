@@ -17,17 +17,16 @@ using namespace chrono;
 void karpRabin(string, const char[], int);
 int pow(int, int);
 char* rightLine(string, string, string);
-void readFile(ifstream&, Hash_chain<char*>&, Occur<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&, Occur<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&, Occur<char*>&);
+void readFile(ifstream&, Hash_chain<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&);
 bool checkTitle(char*);
 void showMenu();
 
 int sentenceCount = 0;
-
+Occur<char*> occur;
 
 int main(int argc, char** argv){
-    Occur<char*> occur(100);
     int choice, hash;
     Hash_chain<char *> hash_chain(nullptr, 600);
     Hash_probe<char *> hash_probe(nullptr, 600);
@@ -45,15 +44,13 @@ int main(int argc, char** argv){
     output.exceptions(fstream::failbit | fstream::badbit);
     try{
         auto ProgramStart = high_resolution_clock::now();
-        readFile(input, hash_chain, occur);
-        // readFile(input, hash_probe, occur);
-        // readFile(input, hash_probe, hash_chain, occur);
-        // readFile(input, hash_probe, occur);
+        readFile(input, hash_chain);
+        readFile(input, hash_probe);
+        // readFile(input, hash_probe, hash_chain);
+        // readFile(input, hash_probe);
         input.close();
         auto chainOptStart = high_resolution_clock::now();
-        // hash_chain.print();
         hash_chain.optimize();
-        
         auto chainOptEnd = high_resolution_clock::now();
         auto chainDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
         auto ProgramEnd = high_resolution_clock::now();
@@ -73,15 +70,19 @@ int main(int argc, char** argv){
                     // perform hash look up (Adventures I-VII)
                     cout << "Enter hash index: ";
                     cin >> hash;
+                    cerr << "User input in (1): " << hash << endl;
                     found = hash_chain.search(hash);
                     cout << "The word is: " << found << endl;
+                    cerr << "The word is: " << found << endl << endl;
                     break;
                 case 2:
                     // perform hash look up (Adventures VIII-XII)
                     cout << "Enter hash index: ";
                     cin >> hash;
+                    cerr << "User input in (2): " << hash << endl;
                     found = hash_probe.search(hash);
                     cout << "The word is: " << found << endl;
+                    cerr << "The word is: " << found << endl << endl;
                     break;
                 case 3:
                     // report on RKP Algo run (Adventure IX)
@@ -99,19 +100,24 @@ int main(int argc, char** argv){
                     // look up index in hash table (chaining)
                     cout << "Enter word in hash table (chaining) for index" << endl;
                     cin >> word;
+                    cerr << "User input in (6): " << word << endl;
                     hash = hash_chain.search(word);
                     cout << "The index for " << word << " is: " << hash << endl;
+                    cerr << "The index for " << word << " is: " << hash << endl << endl;
                     break;
                 case 7:
                     // look up index in hash table (linear probing)
                     cout << "Enter word in hash table (chaining) for index" << endl;
                     cin >> word;
-                    // hash = hash_probe.search(word);
+                    cerr << "User input in (7): " << word << endl;
+                    hash = hash_probe.search(word);
                     cout << "The index for " << word << " is: " << hash << endl;
+                    cerr << "The index for " << word << " is: " << hash << endl << endl;
                     break;
                 case 8:
                     // output the number of sentences in the text
                     cout << "There are " << sentenceCount << " sentences in ths text." << endl;
+                    cerr << "There are " << sentenceCount << " sentences in ths text." << endl << endl;
                     break;
                 case 9:
                     // output the most occuring words (top 80)
@@ -131,15 +137,17 @@ int main(int argc, char** argv){
                     cerr << "Most occuring word was " << endl;
                     cerr << "Least occuring word was " << endl;
                     cerr << "Number of sentences in the text was: " << sentenceCount << endl;
-                    cerr << "Run time for getting data: " << ProgramDuration.count() << endl;
+                    cerr << "Run time for getting data: " << ProgramDuration.count() << "ns" << endl << endl;
                     break;
-            } 
+            }
             cout << endl;
+            memset(word, 0, 255);
             cin.ignore();
             showMenu(); 
             cin >> choice;      
         } 
         output.close();
+        cerr.rdbuf(stream_buffer_cerr);
     }catch(fstream::failure ex){
         cerr << "File failure in main: " << ex.what() << endl;
     }
@@ -147,7 +155,7 @@ int main(int argc, char** argv){
     return 0;
 }
 
-void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
+void readFile(ifstream& infile, Hash_chain<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
@@ -197,13 +205,9 @@ void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
                             }
                         }
                     }
-                    str.print();
-                    cout << str.getsize() << endl;
                     tmp = str.getList();
-                    cout << tmp << endl;
-                    cout << strlen(tmp) << endl;
                     if(strcmp(tmp, "\0")!=0){
-                        // occr.push(tmp);
+                        // occur.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
@@ -218,7 +222,7 @@ void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& h, Occur<char*>& occr){
+void readFile(ifstream& infile, Hash_probe<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* sname = new char[ssize];
@@ -266,7 +270,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h, Occur<char*>& occr){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                // occr.push(tmp);
+                // occur.push(tmp);
                 h.insert(tmp, r%h.getSize());
             }
             
@@ -279,7 +283,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h, Occur<char*>& occr){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, Occur<char*>& occr){
+void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
     Vector<char> str;
     int fsize = 81, ssize = 100, r = 0;
     char* sname = new char[ssize];
@@ -328,11 +332,9 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, Oc
                 }
             }
             tmp = str.getList();
-            // cout << tmp << endl;
-            // cout << strlen(tmp) << endl;
             
             if(strcmp(tmp, "\0")!=0){
-                // occr.push(tmp);
+                occur.push(tmp);
                 if(probe){
                     hp.insert(tmp, r%hp.getSize());
                     chain = true;
@@ -373,68 +375,51 @@ void karpRabin(string pattern, const char inputText[], int primeInput)
     int pHash = 0;
     int tHash = 0;
     int count = 0;
+
     int i, j;
 
-    if (pLen == 1)
+    for(i=0; i < pLen; i++)
     {
-        pHash = toupper(pattern[0]) % primeInput;
-        tHash = toupper(inputText[0]) % primeInput;
-        }
-    else
-    {
-        for (i = 0; i < pLen; i++)
-        {
-            pHash = (pHash * 256 + toupper(pattern[i])) % primeInput;
-            tHash = (tHash * 256 + toupper(inputText[i])) % primeInput;
-        }
+        pHash = (pattern[i]) % primeInput;
+        tHash = (inputText[i] % primeInput);
     }
 
-
-    for (i = 0; i <= tLen - pLen; i++)
+    bool in_word = false;
+    string word;
+    for(i=0; i < tLen; i++)
     {
-        if (pHash == tHash)
-        {
-            bool match = true;
-            for (j = 0; j < pLen; j++)
-            {
-                if (toupper(inputText[i+j]) != toupper(pattern[j]))
-                {
-                    match = false;
-                    break;
+        if(isalpha(inputText[i])) {
+            in_word = true;
+            word += tolower(inputText[i]);
+        } else if(in_word) {
+            in_word = false;
+            if(word.size() >= pLen) {
+                bool match = true;
+                for(j = 0; j < pLen; j++) {
+                    if(word[j] != pattern[j]) {
+                        match = false;
+                        break;
+                    }
                 }
-            }
-            if (match)
-            {
-                if ((i == 0 || !isalpha(inputText[i-1])) && !isalpha(inputText[i+pLen]))
-                {
+                if(match) {
                     count++;
                 }
             }
-        }
-
-        if (i < tLen - pLen)
-        {
-            tHash = ((tHash - toupper(inputText[i]) * pow(256, pLen-1, primeInput)) * 256 + toupper(inputText[i+pLen])) % primeInput;
-            if (tHash < 0)
-            {
-                tHash += primeInput;
-            }
+            word.clear();
         }
     }
-
     auto stop = high_resolution_clock::now();
-    auto durationR = duration_cast<microseconds>(stop - start);
+    auto durationR = duration_cast<microseconds>(stop-start);
 
-    cout << "Karp Rabin:" << endl;
-    cout << "Number of occurrences in text is: " << count << endl;
-    cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
+    // cout << "Karp Rabin:" << endl;
+    // cout << "Number of occurrences in text is: " << count << endl;
+    // cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
 }
 
-int pow(int x, int n, int prime) 
-{
+int pow(int x, int n) {
     int result = 1;
     for (int i = 0; i < n; i++) {
-        result = (result * x) % prime;
+        result *= x;
     }
     return result;
 }
