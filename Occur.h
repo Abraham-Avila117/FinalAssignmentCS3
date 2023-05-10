@@ -105,9 +105,12 @@ void Occur<T>::push(T elem){
             size++;
             return;
         }
+        else
+        {
         vec[size].word = elem;
         vec[size].rank = 1;
         size++;
+        }
     }
 
 }
