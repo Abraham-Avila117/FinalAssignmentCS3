@@ -92,7 +92,7 @@ void Occur<T>::push(T elem){
         {
             maxSize = maxSize+100;
             Occurence<T> *temp = new Occurence<T>[maxSize];
-            for(int i=0; i< size-1; i++)
+            for(int i=0; i< size; i++)
             {
                 temp[i].word = vec[i].word;
                 temp[i].rank = vec[i].rank;
@@ -151,7 +151,7 @@ void Occur<T>::remove(T item)
     if (index != -1)
     {
         if(temp)
-            for(int i = index; i<size-1; i++)
+            for(int i = index; i<size; i++)
             {
                 vec[i] = vec[i+1];
             }
@@ -252,7 +252,7 @@ template <class T>
 Occurence<T> * Occur<T>::getList()
 {
     Occurence<T> * list = new Occurence<T> [size];
-    for(int i=0; i< size-1; i++)
+    for(int i=0; i< size; i++)
     {
         list[i]=vec[i];
     }
@@ -263,7 +263,7 @@ template <class T>
 T * Occur<T>::getWordList()
 {
     T * list = new T[size];
-    for(int i=0; i< size-1; i++)
+    for(int i=0; i< size; i++)
     {
         list[i]=vec[i].word;
     }
