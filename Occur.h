@@ -25,13 +25,13 @@ public:
     void clear();   // clear the list
     bool isEmpty()const; // check if list is empty
     bool isFull()const;  // check if list is full to increase size
-    void print() const;
+    // void print() const;
     void sort();// start the sort
     void sort(Occurence<T> *, int, int); //recersive call for the sort
     void merge(Occurence<T> *, int const, int const,int const); // merge sort fuction
     Occurence<T> * getList();       //get list so far
-    T * getWordList(); // list of only words
-    int *getRankList();// list of only ranks
+    T * getWordList();
+    int *getRankList();
     int getsize()const; //get the size of list so far
 
     ~Occur();
@@ -118,7 +118,9 @@ void Occur<T>::push(T elem){
 template <class T>
 int Occur<T>::search(T elem){
     for(int i = 0; i < maxSize; i++){
+       // cout<<"i=="<<i<<endl;
         if(vec[i].word==elem){
+            //cout<<"ret=="<<i<<endl;
             return i;
         }
     }
@@ -174,7 +176,7 @@ template <class T>
 void Occur<T>::sort(Occurence<T> *array, int begin, int end){
     if (begin >= end)
         return;
-    int mid = begin + (end - begin)/2;
+    int mid = begin + (end - begin) / 2;
     sort(array, begin, mid);
     sort(array, mid + 1, end);
     merge(array, begin, mid, end);
@@ -184,10 +186,10 @@ template <class T>
 void Occur<T>::sort(){
     if (0 >= size)
         return;
-    int mid = (size)/2;
+    int mid = 0 + (size - 1) / 2;
     sort(vec, 0, mid);
-    sort(vec, mid + 1, size);
-    merge(vec, 0, mid, size);
+    sort(vec, mid + 1, size-1);
+    merge(vec, 0, mid, size-1);
 }
 
 template <class T>
@@ -271,22 +273,11 @@ template <class T>
 int* Occur<T>::getRankList()
 {
     int * list = new int[size];
-    for(int i=0; i< size; i++)
+    for(int i=0; i< size-1; i++)
     {
         list[i]=vec[i].rank;
     }
     return list;
-}
-
-template <class T>
-void Occur<T>::print()const
-{
-    
-    for(int i=0; i< size; i++)
-    {
-        cout << vec[i].word << " | "<< vec[i].rank << endl;
-    }
-    
 }
 
 template <class T>
