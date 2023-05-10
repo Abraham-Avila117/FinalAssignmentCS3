@@ -14,6 +14,7 @@ public:
     Vector(int);
     T getTop();
     T getBottom();
+    T index(int);
     void push(T); // insert into the vector list
     void remove(T); // delete or pop certain element
     int search(T);  // search for element in list
@@ -58,14 +59,21 @@ T Vector<T>::getTop(){
 }
 
 template <class T>
+T Vector<T>::index(int idx){
+    return vec[idx];
+}
+
+template <class T>
 void Vector<T>::push(T elem){
     if(isFull()){
         maxSize *= 2;
         T* tmp = new T[maxSize];
         assert(tmp!=nullptr);
-        for(int i = 0; i < maxSize; i++)
+        
+        for(int i = 0; i < maxSize; i++){
             tmp[i] = vec[i];
-
+        }
+            
         delete [] vec;
         vec = tmp;
         tmp = nullptr;
@@ -141,21 +149,24 @@ void Vector<T>::print() const{
 
 template <class T>
 T* Vector<T>::getList(){
-    T* list = new T[size];
-
+    // T* list = new T[size];
+    // memset(list, 0, size);
     // assert(list!=nullptr);
-    cout << "vector size is: "<<size << endl;
-    cout << "list before copy: " <<list << endl;
-    cout << "strlen before copy " << strlen(list) << endl;
+    T* list = new T[size];
+    // cout << "vector size is: "<<size << endl;
+    // cout << "strlen before copy " << strlen(list) << endl;
+    
+    // if(strlen(list) > 1 ){
+    //     cout << "did not work" << endl;
+    //     exit(1);
+    // }
     for(int i = 0; i < size; i++){
         if(isalpha(vec[i])){
             list[i] = vec[i];
         }
-        cout << vec[i] << endl;
-        cout << list[i] << endl;
     }
-    cout << "list: " << list << endl;
-    cout << "strlen(list): " << strlen(list) << endl;
+    // cout << "list: " << list << endl;
+    // cout << "strlen(list): " << strlen(list) << endl;
     return list;
 }
 

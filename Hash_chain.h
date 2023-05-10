@@ -396,6 +396,7 @@ template <class T>
 Hash_chain<T>::~Hash_chain(){
     Node<T>* head, *tmp;
     for(int i = 0; i < size; i++){
+        if(array[i].item == nullptr) continue;
         head = array[i].next;
         while(head!=nullptr){
             tmp = head;
