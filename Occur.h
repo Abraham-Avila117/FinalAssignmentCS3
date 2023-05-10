@@ -58,7 +58,7 @@ Occur<T>::Occur(int zize){
 
 template <class T>
 T Occur<T>::getTop(){
-    return vec[size].word;
+    return vec[size-1].word;
 }
 
 template <class T>
@@ -67,7 +67,7 @@ T Occur<T>::getBottom(){
 }
 template <class T>
 int Occur<T>::getTopRank(){
-    return vec[size].rank;
+    return vec[size-1].rank;
 }
 
 template <class T>
@@ -81,7 +81,9 @@ void Occur<T>::push(T elem){
     bool temp_TF = isFull();
     if(a!=-1)
     {
-         vec[a].rank++;
+        int b = vec[a].rank;
+        b++;
+        vec[a].rank = b;
         return;
     }
     if(a == -1)
