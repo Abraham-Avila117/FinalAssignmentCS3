@@ -14,17 +14,19 @@
 using namespace std;
 using namespace chrono;
 
-void karpRabin(string, const char[], int);
-int pow(int, int);
-char* rightLine(string, string, string);
+void karpRabin(string, const char[], int, ofstream&);
+int pow(int, int, int);
 void readFile(ifstream&, Hash_chain<char*>&);
 void readFile(ifstream&, Hash_probe<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&, ofstream&);
 bool checkTitle(char*);
 void showMenu();
 
 int sentenceCount = 0;
+int RPcount = 0;
+int line = 8417;
 Occur<char*> occur;
+string pattern;
 
 int main(int argc, char** argv){
     int choice, hash;
@@ -43,11 +45,18 @@ int main(int argc, char** argv){
     }
     output.exceptions(fstream::failbit | fstream::badbit);
     try{
+        output.open(argv[2], ios::out);
+        streambuf* stream_buffer_cerr = cerr.rdbuf();
+        streambuf* stream_buffer_cout = cout.rdbuf();
+        streambuf* stream_buffer_output = output.rdbuf();
+        cerr.rdbuf(stream_buffer_output); 
+
         auto ProgramStart = high_resolution_clock::now();
         readFile(input, hash_chain);
         readFile(input, hash_probe);
-        // readFile(input, hash_probe, hash_chain);
-        // readFile(input, hash_probe);
+        cerr << "Rabin-Karp section: " << endl;
+        readFile(input, hash_probe, hash_chain, output);
+        readFile(input, hash_probe);
         input.close();
         auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
@@ -55,12 +64,6 @@ int main(int argc, char** argv){
         auto chainDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
         auto ProgramEnd = high_resolution_clock::now();
         auto ProgramDuration = duration_cast<nanoseconds>(ProgramEnd-ProgramStart);
-
-        output.open(argv[2], ios::out);
-        streambuf* stream_buffer_cerr = cerr.rdbuf();
-        streambuf* stream_buffer_cout = cout.rdbuf();
-        streambuf* stream_buffer_output = output.rdbuf();
-        cerr.rdbuf(stream_buffer_output);       
 
         showMenu();
         cin >> choice;
@@ -86,7 +89,8 @@ int main(int argc, char** argv){
                     break;
                 case 3:
                     // report on RKP Algo run (Adventure IX)
-
+                    cout << "Number of occurrence of " << pattern << ": " << RPcount << endl;
+                    cerr << "Number of occurrence of " << pattern << ": " << RPcount << endl;
                     break;
                 case 4:
                     // print hash table (chaining)
@@ -283,24 +287,24 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
+void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, ofstream& outfile){
     Vector<char> str;
     int fsize = 81, ssize = 100, r = 0;
     char* sname = new char[ssize];
     assert(sname!=nullptr);
     char *tmp = nullptr, *pch;
     char d[] = " \n\'\"\r,;:";
-    string pattern;
     bool chain = false, probe = true;
 
     cout << "Enter word pattern: ";
     cin >> pattern;
+    outfile << "Word is " << pattern << endl << endl;
 
     while(!infile.eof()){
 
         infile >> sname[0];
         infile.getline(&sname[1], ssize, '\n');
-        karpRabin(pattern, sname, 11);
+        karpRabin(pattern, sname, 11, outfile);
 
         pch = strtok(sname, d);
 
@@ -367,59 +371,68 @@ bool checkTitle(char* check){
     return false;
 }
 
-void karpRabin(string pattern, const char inputText[], int primeInput)
+void karpRabin(string pattern, const char inputText[], int primeInput, ofstream& outfile)
 {
-    auto start = high_resolution_clock::now();
     int pLen = pattern.size();
     int tLen = strlen(inputText);
     int pHash = 0;
     int tHash = 0;
-    int count = 0;
 
-    int i, j;
-
-    for(i=0; i < pLen; i++)
+    if (pLen == 1)
     {
-        pHash = (pattern[i]) % primeInput;
-        tHash = (inputText[i] % primeInput);
-    }
-
-    bool in_word = false;
-    string word;
-    for(i=0; i < tLen; i++)
+        pHash = toupper(pattern[0]) % primeInput;
+        tHash = toupper(inputText[0]) % primeInput;
+        }
+    else
     {
-        if(isalpha(inputText[i])) {
-            in_word = true;
-            word += tolower(inputText[i]);
-        } else if(in_word) {
-            in_word = false;
-            if(word.size() >= pLen) {
-                bool match = true;
-                for(j = 0; j < pLen; j++) {
-                    if(word[j] != pattern[j]) {
-                        match = false;
-                        break;
-                    }
-                }
-                if(match) {
-                    count++;
-                }
-            }
-            word.clear();
+        for (int i = 0; i < pLen; i++)
+        {
+            pHash = (pHash * 256 + toupper(pattern[i])) % primeInput;
+            tHash = (tHash * 256 + toupper(inputText[i])) % primeInput;
         }
     }
-    auto stop = high_resolution_clock::now();
-    auto durationR = duration_cast<microseconds>(stop-start);
 
-    // cout << "Karp Rabin:" << endl;
-    // cout << "Number of occurrences in text is: " << count << endl;
-    // cout << "Time: " << durationR.count() << " microseconds" << endl << endl;
+
+    for (int i = 0; i <= tLen - pLen; i++)
+    {
+        if (pHash == tHash)
+        {
+            bool match = true;
+            for (int j = 0; j < pLen; j++)
+            {
+                if (toupper(inputText[i+j]) != toupper(pattern[j]))
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if (match)
+            {
+                if ((i == 0 || !isalnum(inputText[i-1])) && !isalnum(inputText[i+pLen]))
+                {
+                    outfile << "Pattern found at:\n";
+                    outfile << "line: " << line << " column:" <<  i << endl;
+                    RPcount++;
+                }
+            }
+        }
+        if (i < tLen - pLen)
+        {
+            tHash = ((tHash - toupper(inputText[i]) * pow(256, pLen-1, primeInput)) * 256 + toupper(inputText[i+pLen])) % primeInput;
+            if (tHash < 0)
+            {
+                tHash += primeInput;
+            }
+        }
+    }
+    line++;
 }
 
-int pow(int x, int n) {
+int pow(int x, int n, int prime) 
+{
     int result = 1;
     for (int i = 0; i < n; i++) {
-        result *= x;
+        result = (result * x) % prime;
     }
     return result;
 }

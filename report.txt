@@ -1,0 +1,6 @@
+Rabin-Karp section: 
+Word is thus
+
+Pattern found at:
+line: 8691 column:25
+Number of occurrence of thus: 1
