@@ -25,7 +25,7 @@ public:
     void clear();   // clear the list
     bool isEmpty()const; // check if list is empty
     bool isFull()const;  // check if list is full to increase size
-    // void print() const;
+    void print() const;
     void sort();// start the sort
     void sort(Occurence<T> *, int, int); //recersive call for the sort
     void merge(Occurence<T> *, int const, int const,int const); // merge sort fuction
@@ -273,13 +273,20 @@ template <class T>
 int* Occur<T>::getRankList()
 {
     int * list = new int[size];
-    for(int i=0; i< size-1; i++)
+    for(int i=0; i< size; i++)
     {
         list[i]=vec[i].rank;
     }
     return list;
 }
-
+template <class T>
+void Occur<T>::print()const
+{
+    for(int i=0; i< size; i++)
+    {
+        cout<<vec[i].word<<" | "<<vec[i].rank<<endl;
+    }
+}
 template <class T>
 Occur<T>::~Occur(){
 delete [] vec;
