@@ -44,9 +44,9 @@ private:
 
 template <class T>
 Occur<T>::Occur(){
- vec = new Occurence<T>[100];
+ vec = new Occurence<T>[10];
  size = 0;
- maxSize = 100;
+ maxSize = 10;
 }
 
 template <class T>

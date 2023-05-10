@@ -9,7 +9,7 @@
 #include "Hash_chain.h"
 #include "Hash_probing.h"
 #include "Vector.h"
-#include "Occur.h"
+// #include "Occur.h"
 
 using namespace std;
 using namespace chrono;
@@ -17,21 +17,20 @@ using namespace chrono;
 void karpRabin(string, const char[], int);
 int pow(int, int);
 char* rightLine(string, string, string);
-void readFile(ifstream&, Hash_chain<char*>&, Occur<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&, Occur<char*>&);
-void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&, Occur<char*>&);
+void readFile(ifstream&, Hash_chain<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&);
+void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&);
 bool checkTitle(char*);
 void showMenu();
 
 int sentenceCount = 0;
-
+// Occur<char*> occur;
 
 int main(int argc, char** argv){
-    Occur<char*> occur(100);
     int choice, hash;
-    Hash_chain<char *> hash_chain(nullptr, 600);
-    Hash_probe<char *> hash_probe(nullptr, 600);
-    char* word = new char[255], *found;
+    Hash_chain<char *> hash_chain(nullptr, 1000);
+    Hash_probe<char *> hash_probe(nullptr, 1000);
+    char* word = new char[30],*found;
 
     ifstream input;
     ofstream output;
@@ -45,13 +44,12 @@ int main(int argc, char** argv){
     output.exceptions(fstream::failbit | fstream::badbit);
     try{
         auto ProgramStart = high_resolution_clock::now();
-        readFile(input, hash_chain, occur);
-        // readFile(input, hash_probe, occur);
-        // readFile(input, hash_probe, hash_chain, occur);
-        // readFile(input, hash_probe, occur);
+        readFile(input, hash_chain);
+        // readFile(input, hash_probe);
+        // readFile(input, hash_probe, hash_chain);
+        // readFile(input, hash_probe);
         input.close();
         auto chainOptStart = high_resolution_clock::now();
-        // hash_chain.print();
         hash_chain.optimize();
         
         auto chainOptEnd = high_resolution_clock::now();
@@ -106,7 +104,7 @@ int main(int argc, char** argv){
                     // look up index in hash table (linear probing)
                     cout << "Enter word in hash table (chaining) for index" << endl;
                     cin >> word;
-                    // hash = hash_probe.search(word);
+                    hash = hash_probe.search(word);
                     cout << "The index for " << word << " is: " << hash << endl;
                     break;
                 case 8:
@@ -139,7 +137,9 @@ int main(int argc, char** argv){
             showMenu(); 
             cin >> choice;      
         } 
+        delete [] word;
         output.close();
+        cerr.rdbuf(stream_buffer_cerr); // this will cause seg fault if deleted
     }catch(fstream::failure ex){
         cerr << "File failure in main: " << ex.what() << endl;
     }
@@ -147,14 +147,14 @@ int main(int argc, char** argv){
     return 0;
 }
 
-void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
+void readFile(ifstream& infile, Hash_chain<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* fname = new char[fsize];
     assert(fname!=nullptr);
     char* sname = new char[ssize];
     assert(sname!=nullptr);
-    char *tmp = nullptr, *pch;
+    char *pch, *tmp = nullptr;
     char d[] = " \n\'\"\r,;:";
 
     while(!infile.eof()){
@@ -170,7 +170,6 @@ void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
                 while(pch != nullptr){
 
                     if(strcmp(pch, "VII.")==0){
-                        tmp = nullptr;
                         pch = nullptr;
                         delete [] fname;
                         delete [] sname;
@@ -197,28 +196,38 @@ void readFile(ifstream& infile, Hash_chain<char*>& h, Occur<char*>& occr){
                             }
                         }
                     }
-                    str.print();
-                    cout << str.getsize() << endl;
+                    // cout << "---------------------------------------------" << endl;
+                    // str.print();
+                    // cout << str.getsize() << endl;
                     tmp = str.getList();
-                    cout << tmp << endl;
-                    cout << strlen(tmp) << endl;
+                    // cout << "------------------------------\n";
+                    // str.print();
+                    // char tmp[str.getsize()];
+                    // cout << str.getsize() << endl;
+                    // for(int i = 0; i < str.getsize(); i++){
+                    //     if(isalpha(str.index(i)))
+                    //         tmp[i] = str.index(i);
+                    // }
+
+                    // cout << tmp << endl;
+                    // cout << sizeof(tmp) << endl;
+                    
+                    // cout << tmp << endl;
+                    // cout << strlen(tmp) << endl;
                     if(strcmp(tmp, "\0")!=0){
-                        // occr.push(tmp);
+                        // occur.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
-                    r = 0;      
-                    tmp = nullptr;  
+                    r = 0;        
                     pch = strtok(nullptr, d);
                 }
             }
         }
     }
-    delete [] fname;
-    delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& h, Occur<char*>& occr){
+void readFile(ifstream& infile, Hash_probe<char*>& h){
     Vector<char> str;
     int fsize = 81, ssize = 47, r = 0;
     char* sname = new char[ssize];
@@ -279,7 +288,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h, Occur<char*>& occr){
     delete [] sname;
 }
 
-void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, Occur<char*>& occr){
+void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc){
     Vector<char> str;
     int fsize = 81, ssize = 100, r = 0;
     char* sname = new char[ssize];
