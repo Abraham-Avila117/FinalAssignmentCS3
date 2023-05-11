@@ -142,7 +142,6 @@ void Vector<T>::print() const{
 template <class T>
 T* Vector<T>::getList(){
     T* list = new T[size];
-
     // assert(list!=nullptr);
     // cout << "vector size is: "<<size << endl;
     // cout << "list before copy: " <<list << endl;
