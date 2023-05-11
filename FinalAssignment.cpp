@@ -78,6 +78,7 @@ int main(int argc, char** argv){
         input.close();
         auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
+        occur.sort();
         auto chainOptEnd = high_resolution_clock::now();
         auto chainOptDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
         auto chainTimeDuration = duration_cast<nanoseconds>(chainTimeEnd-chainTimeStart);
@@ -154,6 +155,7 @@ int main(int argc, char** argv){
                 case 9:
                     // output the most occuring words (top 80)
                     cerr << "User chose (9):" <<endl;
+                    cout<<"checkAHHH"<<endl;
                     occur.printTop(80);
                     break;
                 case 10:

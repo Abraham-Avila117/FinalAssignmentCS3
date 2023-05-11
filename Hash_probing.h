@@ -141,7 +141,7 @@ void Hash_probe<T>::insert(T newitem, int idx){
             bool T_F = true;
             bool loop = false;
         double test = size_count/size;
-        if (test > 0.75)
+        if (test > 0.90)
         {
             resize(size+1);
         }
@@ -179,6 +179,8 @@ void Hash_probe<T>::print()const{
         else{
             cout << array[i] << "|" << endl;
         }
+        cout<<"size= "<<size_count<<endl; 
+        cout<<"size total= "<<size<<endl;
     }
 }
 
@@ -209,7 +211,7 @@ int Hash_probe<T>::search(T search, int start){
         loop=true;
         
     }
-    if (search == array[end])
+    if (strcmp(search, array[end])==0)
             return end;
     }
     return -1;
@@ -229,7 +231,7 @@ int Hash_probe<T>::search(T search){
         loop=true;
         
     }
-    if (search == array[end])
+    if (strcmp(search, array[end])==0)
             return end;
     }
     return -1;

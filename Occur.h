@@ -289,9 +289,10 @@ template <class T>
 void Occur<T>::printTop(int amount)const
 { 
     int count = 1;
-    for(int i=(size-1); i==(size-amount); i--)
+    int a = (size-1);
+    int b = (size-amount);
+    for(int i=a; i>=b; i = i-1)
     {
-        cout<<count <<". "<< vec[i].word<<" | "<<vec[i].rank<<endl;
         count++;
     }
 }
