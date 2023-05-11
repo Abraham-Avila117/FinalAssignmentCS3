@@ -17,7 +17,7 @@ using namespace std;
 
 template <class T>
 struct Node{
-    int length = 0;
+    int length;
     T item;
     Node<T>* next;
     Node<T>* tail;
@@ -50,7 +50,6 @@ private:
     int size;
     void reSize(int);
     int nullSum(Node<T>[], int);
-    // int nullSum();
 };
 
 template <class T>
@@ -63,6 +62,7 @@ Hash_chain<T>::Hash_chain(){
         array[i].item = buffer;
         array[i].next = nullptr;
         array[i].tail = nullptr;
+        array[i].length = 0;
     }
 }
 
@@ -76,6 +76,7 @@ Hash_chain<T>::Hash_chain(T initalize, int size){
         array[i].item = buffer;
         array[i].next = nullptr;
         array[i].tail = nullptr;
+        array[i].length = 0;
     }
 }
 
@@ -121,7 +122,6 @@ void Hash_chain<T>::reSize(int oldSize){
                 vec.push(curr->item);
                 curr = curr->next;
             }
-            curr = nullptr;            
         }
     }
     

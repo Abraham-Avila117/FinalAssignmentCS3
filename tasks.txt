@@ -17,11 +17,11 @@
         matching and Horner's rule for the rolling hash. Display the word count and positions 
         of the word from the user. This covers (f) in the assignment spec
 
-    /4. (Ari)Word ranking the top 80 words by occurences (most and least). Capitalization does not matter
+    *4. (Ari)Word ranking the top 80 words by occurences (most and least). Capitalization does not matter
         and Double hyphen "--" must be removed. All outputs are streamed to a file from command 
         line argument. This covers (g) and (h) assignment spec
 
-    /5. (Abraham) Develope the main driver program function that is menu driven (0) to terminate and (99) 
+    *5. (Abraham) Develope the main driver program function that is menu driven (0) to terminate and (99) 
         to output everything. This will take in a command line argument of the input file and 
         output file.
     
@@ -30,7 +30,7 @@
         team if definition works. This covers (i) in the 
         assignment spec
 
-    /7. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
+    *7. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
         assignment. This task will be responsible for testing edge cases or errors and 
         addressing them (debugger). 
     
@@ -39,6 +39,4 @@
         2. Make sure to label your section when outputing to the file
         3. Everything will be output lower case except for Section title 
         4. report runtime in nansec (exception: task 6). (j) in spec
-    
-    Note: will consult with sherine about (k) in spec
     */

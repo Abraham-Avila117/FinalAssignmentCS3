@@ -51,17 +51,38 @@ int main(int argc, char** argv){
         streambuf* stream_buffer_output = output.rdbuf();
         cerr.rdbuf(stream_buffer_output); 
 
+        cout << "Enter word for section IX: ";
+        cin >> pattern;
+
+        steady_clock::duration linearDuration;
         auto ProgramStart = high_resolution_clock::now();
+        auto dataTimeStart = high_resolution_clock::now();
+
+        auto chainTimeStart = high_resolution_clock::now();
         readFile(input, hash_chain);
+        auto chainTimeEnd = high_resolution_clock::now();
+
+        auto probeTimeStart = high_resolution_clock::now();
         readFile(input, hash_probe);
-        cerr << "Rabin-Karp section: " << endl;
+        auto probeTimeEnd = high_resolution_clock::now();
+        linearDuration = probeTimeEnd-probeTimeStart;
+
         readFile(input, hash_probe, hash_chain, output);
+
+        auto probeTimeStart2 = high_resolution_clock::now();
         readFile(input, hash_probe);
+        auto probeTimeEnd2 = high_resolution_clock::now();
+        linearDuration += (probeTimeEnd2-probeTimeStart2);        
+
+        auto dataTimeEnd = high_resolution_clock::now();
         input.close();
         auto chainOptStart = high_resolution_clock::now();
         hash_chain.optimize();
         auto chainOptEnd = high_resolution_clock::now();
-        auto chainDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
+        auto chainOptDuration = duration_cast<nanoseconds>(chainOptEnd-chainOptStart);
+        auto chainTimeDuration = duration_cast<nanoseconds>(chainTimeEnd-chainTimeStart);
+        auto probeDuration = duration_cast<nanoseconds>(linearDuration);
+        auto dataDuration = duration_cast<nanoseconds>(dataTimeEnd-dataTimeStart);
         auto ProgramEnd = high_resolution_clock::now();
         auto ProgramDuration = duration_cast<nanoseconds>(ProgramEnd-ProgramStart);
 
@@ -89,8 +110,9 @@ int main(int argc, char** argv){
                     break;
                 case 3:
                     // report on RKP Algo run (Adventure IX)
-                    cout << "Number of occurrence of " << pattern << ": " << RPcount << endl;
-                    cerr << "Number of occurrence of " << pattern << ": " << RPcount << endl;
+                    cerr << "User chose (3): " << endl;
+                    cout << "Number of occurrence of " << pattern << ": " << RPcount << " in IX"<< endl;
+                    cerr << "Number of occurrence of " << pattern << ": " << RPcount << " in IX" << endl;
                     break;
                 case 4:
                     // print hash table (chaining)
@@ -120,29 +142,39 @@ int main(int argc, char** argv){
                     break;
                 case 8:
                     // output the number of sentences in the text
+                    cerr << "User chose (8): " << endl;
                     cout << "There are " << sentenceCount << " sentences in ths text." << endl;
                     cerr << "There are " << sentenceCount << " sentences in ths text." << endl << endl;
                     break;
                 case 9:
                     // output the most occuring words (top 80)
-                    occur.print();
-
+                    cerr << "User chose (9):" <<endl;
+                    // occur.printTop(80);
                     break;
                 case 10:
                     // output the least occuring words (bottom 80)
-                    occur.print();
+                    cerr << "User chose (10):" <<endl;
+                    // occur.printbottem(80);
                     break;
                 case 99:
                     // output everything
-                    cerr << "Linear Probing occupency used: " << endl;
-                    cerr << "Hash chaning length optimality was 35" << endl;
-                    cerr << "Hash that was use: r%h.getSize()" << endl;
-                    cerr << "Collision resolision for linear probing was "<< endl;
+                    cerr << "User input (99):\n";
+                    cerr << "SYNOPSIS OF PROGRAM:" << endl;
+                    cerr << "Linear Probing occupency used: 75%" << endl;
+                    cerr << "Hash chaning length optimality was: 35" << endl;
+                    cerr << "Hash function used for insertion: r%h.getSize()" << endl;
+                    cerr << "Collision resolusion for linear probing was:"
+                    <<" Moving item down the list until a null space as reached or resize needed"<< endl;
                     cerr << "h-files were used: yes" << endl;
-                    cerr << "Most occuring word was " << endl;
-                    cerr << "Least occuring word was " << endl;
+                    cerr << "Most occuring word was " << occur.getTop() << endl;
+                    cerr << "Least occuring word was " << occur.getBottom() << endl;
                     cerr << "Number of sentences in the text was: " << sentenceCount << endl;
-                    cerr << "Run time for getting data: " << ProgramDuration.count() << "ns" << endl << endl;
+                    cerr << "Run time for Hash chaining data collection: " << chainTimeDuration.count() << "ns" << endl;
+                    cerr << "Run time for Hash chaining optimization: " << chainOptDuration.count() << "ns" << endl;
+                    cerr << "Run time for Hash probing data collection & optimization: " << probeDuration.count() << "ns" << endl;
+                    cerr << "Run time for data collection: " << dataDuration.count() << "ns" << endl;
+                    cerr << "Run time for over all program: " << ProgramDuration.count() << "ns" << endl << endl;
+                    cout << "Information has been published to report.txt" << endl;
                     break;
             }
             cout << endl;
@@ -297,16 +329,22 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
     char *tmp = nullptr, *pch;
     char d[] = " \n\'\"\r,;:";
     bool chain = false, probe = true;
-
-    cout << "Enter word pattern: ";
-    cin >> pattern;
+    steady_clock::duration overalltime;
+    
+    outfile << "Rabin-Karp section: " << endl;
     outfile << "Word is " << pattern << endl << endl;
+    cout << "Word for pattern matching: " << pattern;
 
     while(!infile.eof()){
 
         infile >> sname[0];
         infile.getline(&sname[1], ssize, '\n');
+
+        high_resolution_clock::time_point RPtimeStart = high_resolution_clock::now();
         karpRabin(pattern, sname, 11, outfile);
+        high_resolution_clock::time_point RPtimeEnd = high_resolution_clock::now();
+        overalltime = overalltime + (RPtimeEnd-RPtimeStart);
+        auto RPDuration = duration_cast<nanoseconds>(overalltime);
 
         pch = strtok(sname, d);
 
@@ -315,6 +353,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
             if(strcmp(pch, "X.")==0){
                 delete [] sname;
                 str.clear();
+                cerr << "Rabin-Karp Runtime was: " << RPDuration.count() << "ns" << endl;
                 cout << "IX - X......done" << endl;
                 return;
             }

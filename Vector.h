@@ -35,9 +35,9 @@ private:
 
 template <class T>
 Vector<T>::Vector(){
-    vec = new T[10];
+    vec = new T[100];
     size = 0;
-    maxSize = 10;
+    maxSize = 100;
 }
 
 template <class T>
@@ -54,7 +54,7 @@ T Vector<T>::getBottom(){
 
 template <class T>
 T Vector<T>::getTop(){
-    return vec[size];
+    return vec[size-1];
 }
 
 template <class T>
@@ -63,7 +63,7 @@ void Vector<T>::push(T elem){
         maxSize *= 2;
         T* tmp = new T[maxSize];
         assert(tmp!=nullptr);
-        for(int i = 0; i < maxSize; i++)
+        for(int i = 0; i < size; i++)
             tmp[i] = vec[i];
 
         delete [] vec;
