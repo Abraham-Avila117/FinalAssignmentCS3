@@ -2,5 +2,35 @@ Rabin-Karp section:
 Word is thus
 Pattern found at:
 line: 8691 column:25
-Rabin-Karp Runtime was: 93888255856ms
+Rabin-Karp Runtime was: 94432602255ms
+
+User chose (9):
+Occurrence section most:
+Runtime is : 288
+User input (99):
+SYNOPSIS OF PROGRAM:
+Linear Probing occupency used: 75%
+Hash chaning length optimality was: 228
+Hash function used for insertion: r%h.getSize()
+Hash fucntion for Rabin-Karp: 
+hash(txt[s+1...s+m]) = (d(hash(txt[s...s+m-1])-txt[s]*h) + txt[s+m]) mod q
+Collision resolusion for linear probing was: Moving item down the list until a null space as reached or resize needed
+h-files were used: yes
+Most occuring word was doyle
+Least occuring word was i
+Number of sentences in the text was: 6705
+Run time for Hash chaining data collection: 277047847ns
+Run time for Hash chaining optimization: 171066057ns
+Run time for Hash probing data collection & optimization: 5860786978ns
+Run time for data collection: 6587739052ns
+Run time for over all program: 6758822756ns
+
+User chose (10):
+Occurrence seciton least:
+Runtime is : 135941
+User chose (9):
+Occurrence section most:
+Runtime is : 317
+User chose (8): 
+There are 6705 sentences in this text.
 

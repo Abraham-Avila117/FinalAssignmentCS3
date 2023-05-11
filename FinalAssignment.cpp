@@ -19,6 +19,8 @@ int pow(int, int, int);
 void readFile(ifstream&, Hash_chain<char*>&);
 void readFile(ifstream&, Hash_probe<char*>&);
 void readFile(ifstream&, Hash_probe<char*>&, Hash_chain<char*>&, ofstream&);
+void printOccurMost(ofstream&);
+void printOccurLeast(ofstream&);
 bool checkTitle(char*);
 void showMenu();
 
@@ -54,7 +56,7 @@ int main(int argc, char** argv){
         cout << "Enter word for section IX: ";
         cin >> pattern;
 
-        steady_clock::duration linearDuration;
+        high_resolution_clock::duration linearDuration;
         auto ProgramStart = high_resolution_clock::now();
         auto dataTimeStart = high_resolution_clock::now();
 
@@ -155,12 +157,14 @@ int main(int argc, char** argv){
                 case 9:
                     // output the most occuring words (top 80)
                     cerr << "User chose (9):" <<endl;
-                    occur.printTop(80);
+                    cerr << "Occurrence section most:\n";
+                    printOccurMost(output);
                     break;
                 case 10:
                     // output the least occuring words (bottom 80)
                     cerr << "User chose (10):" <<endl;
-                    occur.printbottem(80);
+                    cerr << "Occurrence seciton least:\n";
+                    printOccurLeast(output);
                     break;
                 case 99:
                     // output everything
@@ -404,6 +408,23 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
         }
     }
     delete [] sname;
+}
+
+void printOccurMost(ofstream& output){
+    auto timeStart = high_resolution_clock::now();
+    occur.printTop(80);
+    auto timeEnd = high_resolution_clock::now();
+    auto duration = duration_cast<nanoseconds>(timeEnd-timeStart);
+    cout << "Runtime is: " << duration.count() << endl;
+    output << "Runtime is: " << duration.count() << endl << endl;
+}
+void printOccurLeast(ofstream& output){
+    auto timeStart = high_resolution_clock::now();
+    occur.printbottem(80);
+    auto timeEnd = high_resolution_clock::now();
+    auto duration = duration_cast<nanoseconds>(timeEnd-timeStart);
+    cout << "Runtime is: " << duration.count() << endl;
+    output << "Runtime is: " << duration.count() << endl << endl;
 }
 
 bool checkTitle(char* check){
