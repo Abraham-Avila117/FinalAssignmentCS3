@@ -17,7 +17,7 @@ using namespace std;
 
 template <class T>
 struct Node{
-    int length;
+    int length = 0;
     T item;
     Node<T>* next;
     Node<T>* tail;
@@ -62,7 +62,6 @@ Hash_chain<T>::Hash_chain(){
         array[i].item = buffer;
         array[i].next = nullptr;
         array[i].tail = nullptr;
-        array[i].length = 0;
     }
 }
 
@@ -76,7 +75,6 @@ Hash_chain<T>::Hash_chain(T initalize, int size){
         array[i].item = buffer;
         array[i].next = nullptr;
         array[i].tail = nullptr;
-        array[i].length = 0;
     }
 }
 

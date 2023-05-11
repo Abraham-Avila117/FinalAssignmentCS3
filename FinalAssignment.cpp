@@ -25,7 +25,7 @@ void showMenu();
 int sentenceCount = 0;
 int RPcount = 0;
 int line = 8417;
-Occur<char*> occur;
+// Occur<char*> occur;
 string pattern;
 
 int main(int argc, char** argv){
@@ -137,14 +137,19 @@ int main(int argc, char** argv){
                     cin >> word;
                     cerr << "User input in (7): " << word << endl;
                     hash = hash_probe.search(word);
-                    cout << "The index for " << word << " is: " << hash << endl;
-                    cerr << "The index for " << word << " is: " << hash << endl << endl;
+                    if(hash == -1){
+                        cout << "Word not in hash table" << endl;
+                        cerr << "Word not in hash table" << endl;
+                    }else{
+                        cout << "The index for " << word << " is: " << hash << endl;
+                        cerr << "The index for " << word << " is: " << hash << endl << endl;                        
+                    }
                     break;
                 case 8:
                     // output the number of sentences in the text
                     cerr << "User chose (8): " << endl;
-                    cout << "There are " << sentenceCount << " sentences in ths text." << endl;
-                    cerr << "There are " << sentenceCount << " sentences in ths text." << endl << endl;
+                    cout << "There are " << sentenceCount << " sentences in this text." << endl;
+                    cerr << "There are " << sentenceCount << " sentences in this text." << endl << endl;
                     break;
                 case 9:
                     // output the most occuring words (top 80)
@@ -161,13 +166,13 @@ int main(int argc, char** argv){
                     cerr << "User input (99):\n";
                     cerr << "SYNOPSIS OF PROGRAM:" << endl;
                     cerr << "Linear Probing occupency used: 75%" << endl;
-                    cerr << "Hash chaning length optimality was: 35" << endl;
+                    cerr << "Hash chaning length optimality was: 228" << endl;
                     cerr << "Hash function used for insertion: r%h.getSize()" << endl;
                     cerr << "Collision resolusion for linear probing was:"
                     <<" Moving item down the list until a null space as reached or resize needed"<< endl;
                     cerr << "h-files were used: yes" << endl;
-                    cerr << "Most occuring word was " << occur.getTop() << endl;
-                    cerr << "Least occuring word was " << occur.getBottom() << endl;
+                    // cerr << "Most occuring word was " << occur.getTop() << endl;
+                    // cerr << "Least occuring word was " << occur.getBottom() << endl;
                     cerr << "Number of sentences in the text was: " << sentenceCount << endl;
                     cerr << "Run time for Hash chaining data collection: " << chainTimeDuration.count() << "ns" << endl;
                     cerr << "Run time for Hash chaining optimization: " << chainOptDuration.count() << "ns" << endl;
@@ -243,9 +248,8 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                         }
                     }
                     tmp = str.getList();
-                    cout << tmp << endl;
                     if(strcmp(tmp, "\0")!=0){
-                        occur.push(tmp);
+                        // occur.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
@@ -308,7 +312,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                occur.push(tmp);
+                // occur.push(tmp);
                 h.insert(tmp, r%h.getSize());
             }
             
@@ -332,8 +336,8 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
     steady_clock::duration overalltime;
     
     outfile << "Rabin-Karp section: " << endl;
-    outfile << "Word is " << pattern << endl << endl;
-    cout << "Word for pattern matching: " << pattern;
+    outfile << "Word is " << pattern << endl;
+    cout << "Word for pattern matching: " << pattern << endl;
 
     while(!infile.eof()){
 
@@ -344,7 +348,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
         karpRabin(pattern, sname, 11, outfile);
         high_resolution_clock::time_point RPtimeEnd = high_resolution_clock::now();
         overalltime = overalltime + (RPtimeEnd-RPtimeStart);
-        auto RPDuration = duration_cast<nanoseconds>(overalltime);
+        auto RPDuration = duration_cast<seconds>(overalltime);
 
         pch = strtok(sname, d);
 
@@ -353,7 +357,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
             if(strcmp(pch, "X.")==0){
                 delete [] sname;
                 str.clear();
-                cerr << "Rabin-Karp Runtime was: " << RPDuration.count() << "ns" << endl;
+                cerr << "Rabin-Karp Runtime was: " << RPDuration.count() << "sec" << endl << endl;
                 cout << "IX - X......done" << endl;
                 return;
             }
@@ -379,7 +383,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                occur.push(tmp);
+                // occur.push(tmp);
                 if(probe){
                     hp.insert(tmp, r%hp.getSize());
                     chain = true;
