@@ -20,6 +20,8 @@ public:
     T getBottom();
     int getTopRank();
     int  getBottomRank();
+    void printTop(int) const;
+    void printbottem(int)const;
     void push(T); // insert into the vector list
     void remove(T); // delete or pop certain element
     int search(T);  // search for element in list
@@ -32,8 +34,8 @@ public:
     void sort(Occurence<T> *, int, int); //recersive call for the sort
     void merge(Occurence<T> *, int const, int const,int const); // merge sort fuction
     Occurence<T> * getList();       //get list so far
-    T * getWordList();
-    int *getRankList();
+    T * getWordList(); //words
+    int *getRankList(); //ranks
     int getsize()const; //get the size of list so far
 
     ~Occur();
@@ -281,6 +283,26 @@ void Occur<T>::print()const
     for(int i=0; i< size; i++)
     {
         cout<<vec[i].word<<" | "<<vec[i].rank<<endl;
+    }
+}
+template <class T>
+void Occur<T>::printTop(int amount)const
+{ 
+    int count = 1;
+    for(int i=(size-1); i==(size-amount); i--)
+    {
+        cout<<count <<". "<< vec[i].word<<" | "<<vec[i].rank<<endl;
+        count++;
+    }
+}
+template <class T>
+void Occur<T>::printbottem(int amount)const
+{
+    int count = 1; 
+    for(int i=0; i< amount; i++)
+    {
+        cout<<count <<". "<< vec[i].word<<" | "<<vec[i].rank<<endl;
+        count++;
     }
 }
 template <class T>
