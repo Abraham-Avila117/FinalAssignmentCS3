@@ -1,21 +1,6 @@
 Rabin-Karp section: 
 Word is thus
-
 Pattern found at:
 line: 8691 column:25
-Rabin-Karp Runtime was: 94119807964310ns
-User chose (9):
-User chose (3): 
-Number of occurrence of thus: 1 in IX
-User input in (1): 5
-The word is: chaff
-
-User input in (6): thus
-The index for thus is: 452
-
-User input in (7): thus
-The index for thus is: -1
-
-User chose (8): 
-There are 6705 sentences in ths text.
+Rabin-Karp Runtime was: 93888255856ms
 

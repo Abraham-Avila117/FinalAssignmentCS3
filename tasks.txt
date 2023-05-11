@@ -4,7 +4,7 @@
     Update: readfile is now much shorter and less complecated. This task was
     done my Abraham Avila. sentence counting is done
 
-    object for main will be hash
+    object for main will be hash_"method"
     *1. (Abraham) Hash table comprising of Open hasing with chaining (I-VI) 
 
         1. Answer (b) and (c) in assignment spec  
@@ -25,12 +25,12 @@
         to output everything. This will take in a command line argument of the input file and 
         output file.
     
-    *6. (everyone: use global int variable)(solved by Abraham Avila using readFile) Develope 
-        sentence counting function. Be sure to clearly define what is a sentence and consult
-        team if definition works. This covers (i) in the 
-        assignment spec
+        *5a. (use global int variable)(solved by Abraham Avila using readFiles) Develope 
+            sentence counting function. Be sure to clearly define what is a sentence and consult
+            team if definition works. This covers (i) in the 
+            assignment spec 
 
-    *7. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
+    *6. (Connor) Demo presenter when assignment is turned in and is responsible for turning in the 
         assignment. This task will be responsible for testing edge cases or errors and 
         addressing them (debugger). 
     
@@ -39,4 +39,14 @@
         2. Make sure to label your section when outputing to the file
         3. Everything will be output lower case except for Section title 
         4. report runtime in nansec (exception: task 6). (j) in spec
+
+    Percentage for each member:
+    Abraham: assigned 2 tasks
+    Has done tasks 1, 5. 2/2 completed = 100%.
+
+    Ari: assigned 2 tasks
+    Has done tasks 2, 4. 2/2 completed = 100%
+
+    Thomas: assigned 2 tasks
+    Has done tasks 3, 6. 2/2 completed = 100%  
     */

@@ -25,7 +25,7 @@ void showMenu();
 int sentenceCount = 0;
 int RPcount = 0;
 int line = 8417;
-// Occur<char*> occur;
+Occur<char*> occur;
 string pattern;
 
 int main(int argc, char** argv){
@@ -139,7 +139,7 @@ int main(int argc, char** argv){
                     hash = hash_probe.search(word);
                     if(hash == -1){
                         cout << "Word not in hash table" << endl;
-                        cerr << "Word not in hash table" << endl;
+                        cerr << "Word not in hash table" << endl << endl;
                     }else{
                         cout << "The index for " << word << " is: " << hash << endl;
                         cerr << "The index for " << word << " is: " << hash << endl << endl;                        
@@ -168,6 +168,8 @@ int main(int argc, char** argv){
                     cerr << "Linear Probing occupency used: 75%" << endl;
                     cerr << "Hash chaning length optimality was: 228" << endl;
                     cerr << "Hash function used for insertion: r%h.getSize()" << endl;
+                    cerr << "Hash fucntion for Rabin-Karp: "<<
+                    "hash(txt[s+1...s+m]) = (d(hash(txt[s...s+m-1])-txt[s]*h) + txt[s+m]) mod q" << endl;
                     cerr << "Collision resolusion for linear probing was:"
                     <<" Moving item down the list until a null space as reached or resize needed"<< endl;
                     cerr << "h-files were used: yes" << endl;
@@ -249,7 +251,7 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
                     }
                     tmp = str.getList();
                     if(strcmp(tmp, "\0")!=0){
-                        // occur.push(tmp);
+                        occur.push(tmp);
                         h.insertCharArray(tmp, r%h.getSize());
                     }
                     str.clear();
@@ -260,7 +262,6 @@ void readFile(ifstream& infile, Hash_chain<char*>& h){
             }
         }
     }
-    delete [] fname;
     delete [] sname;
 }
 
@@ -312,7 +313,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& h){
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                // occur.push(tmp);
+                occur.push(tmp);
                 h.insert(tmp, r%h.getSize());
             }
             
@@ -348,7 +349,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
         karpRabin(pattern, sname, 11, outfile);
         high_resolution_clock::time_point RPtimeEnd = high_resolution_clock::now();
         overalltime = overalltime + (RPtimeEnd-RPtimeStart);
-        auto RPDuration = duration_cast<seconds>(overalltime);
+        auto RPDuration = duration_cast<microseconds>(overalltime);
 
         pch = strtok(sname, d);
 
@@ -357,7 +358,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
             if(strcmp(pch, "X.")==0){
                 delete [] sname;
                 str.clear();
-                cerr << "Rabin-Karp Runtime was: " << RPDuration.count() << "sec" << endl << endl;
+                cerr << "Rabin-Karp Runtime was: " << RPDuration.count() << "ms" << endl << endl;
                 cout << "IX - X......done" << endl;
                 return;
             }
@@ -383,7 +384,7 @@ void readFile(ifstream& infile, Hash_probe<char*>& hp, Hash_chain<char*>& hc, of
             tmp = str.getList();
             
             if(strcmp(tmp, "\0")!=0){
-                // occur.push(tmp);
+                occur.push(tmp);
                 if(probe){
                     hp.insert(tmp, r%hp.getSize());
                     chain = true;
@@ -483,7 +484,7 @@ int pow(int x, int n, int prime)
 }
 
 void showMenu(){
-    cout << "Enter for the following: "<< endl;
+    cout << endl << "Enter for the following: "<< endl;
     cout << "(0) to exit" << endl;
     cout << "(1) to perform hash look up (Adventures I-VII)" << endl;
     cout << "(2) to perform hash look up (Adventures VIII-XII)" << endl;
