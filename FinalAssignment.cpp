@@ -155,7 +155,6 @@ int main(int argc, char** argv){
                 case 9:
                     // output the most occuring words (top 80)
                     cerr << "User chose (9):" <<endl;
-                    cout<<"checkAHHH"<<endl;
                     occur.printTop(80);
                     break;
                 case 10:
