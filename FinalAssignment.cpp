@@ -154,12 +154,12 @@ int main(int argc, char** argv){
                 case 9:
                     // output the most occuring words (top 80)
                     cerr << "User chose (9):" <<endl;
-                    // occur.printTop(80);
+                    occur.printTop(80);
                     break;
                 case 10:
                     // output the least occuring words (bottom 80)
                     cerr << "User chose (10):" <<endl;
-                    // occur.printbottem(80);
+                    occur.printbottem(80);
                     break;
                 case 99:
                     // output everything
@@ -168,13 +168,13 @@ int main(int argc, char** argv){
                     cerr << "Linear Probing occupency used: 75%" << endl;
                     cerr << "Hash chaning length optimality was: 228" << endl;
                     cerr << "Hash function used for insertion: r%h.getSize()" << endl;
-                    cerr << "Hash fucntion for Rabin-Karp: "<<
+                    cerr << "Hash fucntion for Rabin-Karp: \n"<<
                     "hash(txt[s+1...s+m]) = (d(hash(txt[s...s+m-1])-txt[s]*h) + txt[s+m]) mod q" << endl;
                     cerr << "Collision resolusion for linear probing was:"
                     <<" Moving item down the list until a null space as reached or resize needed"<< endl;
                     cerr << "h-files were used: yes" << endl;
-                    // cerr << "Most occuring word was " << occur.getTop() << endl;
-                    // cerr << "Least occuring word was " << occur.getBottom() << endl;
+                    cerr << "Most occuring word was " << occur.getTop() << endl;
+                    cerr << "Least occuring word was " << occur.getBottom() << endl;
                     cerr << "Number of sentences in the text was: " << sentenceCount << endl;
                     cerr << "Run time for Hash chaining data collection: " << chainTimeDuration.count() << "ns" << endl;
                     cerr << "Run time for Hash chaining optimization: " << chainOptDuration.count() << "ns" << endl;
