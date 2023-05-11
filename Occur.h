@@ -1,5 +1,7 @@
 #ifndef occur_h
 #define occur_h
+#include <cstring>
+#include <iostream>
 
 using namespace std;
 
@@ -79,48 +81,41 @@ template <class T>
 void Occur<T>::push(T elem){
     int a = search(elem);
     bool temp_TF = isFull();
+    if(temp_TF)
+    {
+        maxSize = maxSize+10;
+        Occurence<T> *temp = new Occurence<T>[maxSize];
+        for(int i=0; i< size; i++)
+        {
+            //cout<<vec[i].word<<endl;
+            temp[i].word = vec[i].word;
+            //cout<<temp[i].word<<endl;
+            temp[i].rank = vec[i].rank;
+        }
+        delete [] vec;
+        vec = temp;
+        temp =nullptr;
+    }
     if(a!=-1)
     {
         int b = vec[a].rank;
         b++;
         vec[a].rank = b;
-        return;
+
     }
     if(a == -1)
     {
-        if(temp_TF)
-        {
-            maxSize = maxSize+100;
-            Occurence<T> *temp = new Occurence<T>[maxSize];
-            for(int i=0; i< size; i++)
-            {
-                temp[i].word = vec[i].word;
-                temp[i].rank = vec[i].rank;
-            }
-            delete [] vec;
-            vec = temp;
-            temp =nullptr;
-            vec[size].word = elem;
-            vec[size].rank = 1;
-            size++;
-            return;
-        }
-        else
-        {
         vec[size].word = elem;
         vec[size].rank = 1;
         size++;
-        }
     }
 
 }
 
 template <class T>
 int Occur<T>::search(T elem){
-    for(int i = 0; i < maxSize; i++){
-       // cout<<"i=="<<i<<endl;
-        if(vec[i].word==elem){
-            //cout<<"ret=="<<i<<endl;
+    for(int i = 0; i < size; i++){
+        if(strcmp(vec[i].word,elem)==0){
             return i;
         }
     }
@@ -136,6 +131,9 @@ void Occur<T>::clear(){
 
 template <class T>
 bool Occur<T>::isFull()const{
+    bool a = (size == maxSize);
+    if(a)
+        cout<<"resize"<<endl;
     return (size == maxSize);
 }
 
@@ -282,6 +280,7 @@ int* Occur<T>::getRankList()
 template <class T>
 void Occur<T>::print()const
 {
+    cout<<"max size = "<<maxSize<<"  size ="<<size<<endl;
     for(int i=0; i< size; i++)
     {
         cout<<vec[i].word<<" | "<<vec[i].rank<<endl;
