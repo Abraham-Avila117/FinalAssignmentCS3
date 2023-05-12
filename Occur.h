@@ -293,6 +293,7 @@ void Occur<T>::printTop(int amount)const
     int b = (size-amount);
     for(int i=a; i>=b; i = i-1)
     {
+        cout<<count<<vec[i].word<<" | "<<vec[i].rank<<endl;
         count++;
     }
 }
