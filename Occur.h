@@ -22,6 +22,7 @@ public:
     int  getBottomRank();
     void printTop(int) const;
     void printbottem(int)const;
+    void printIdx(int idx)const;
     void push(T); // insert into the vector list
     void remove(T); // delete or pop certain element
     int search(T);  // search for element in list
@@ -285,6 +286,13 @@ void Occur<T>::print()const
         cout<<vec[i].word<<" | "<<vec[i].rank<<endl;
     }
 }
+
+template <class T>
+void Occur<T>::printIdx(int idx)const
+{
+    cout << vec[idx].word<< " : "<< vec[idx].rank<<endl;
+}
+
 template <class T>
 void Occur<T>::printTop(int amount)const
 { 

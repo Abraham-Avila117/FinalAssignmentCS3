@@ -166,6 +166,12 @@ int main(int argc, char** argv){
                     cerr << "Occurrence seciton least:\n";
                     printOccurLeast(output);
                     break;
+                case 11:
+                    // number of occurrences of a word in a text
+                    cerr << "User chose (11):" << endl;
+                    cout << "In put a word: ";
+                    cin >> word;
+                    occur.printIdx(occur.search(word));
                 case 99:
                     // output everything
                     cerr << "User input (99):\n";

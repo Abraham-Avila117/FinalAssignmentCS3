@@ -18,6 +18,7 @@ using namespace std;
 template <class T>
 struct Node{
     int length = 0;
+    int rank = 0;
     T item;
     Node<T>* next;
     Node<T>* tail;
@@ -356,6 +357,7 @@ bool Hash_chain<T>::isInChar(char* search, int place)const{
     if(array[place].item == nullptr)
         return false;
     else if(strcmp(array[place].item,search)==0){
+        array[place].rank++;
         tmp = nullptr;
         return true;
     }
@@ -363,6 +365,7 @@ bool Hash_chain<T>::isInChar(char* search, int place)const{
         tmp = array[place].next;
         while(tmp != nullptr){
             if(strcmp(tmp->item,search)==0){
+                array[place].rank++;
                 tmp = nullptr;
                 return true;
             }
