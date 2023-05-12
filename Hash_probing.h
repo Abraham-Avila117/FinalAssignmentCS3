@@ -179,8 +179,6 @@ void Hash_probe<T>::print()const{
         else{
             cout << array[i] << "|" << endl;
         }
-        cout<<"size= "<<size_count<<endl; 
-        cout<<"size total= "<<size<<endl;
     }
 }
 
