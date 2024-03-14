@@ -34,6 +34,7 @@ public:
     T search(int)const;    // searches the item given a hash index
     int search(T);     // searches the hash index given an item
     void insert(T, int);    // insertion to hash table
+    void printOccur(T);
     void insertCharArray(char*, int);   // insertion specific to char*
     void print()const;          // prints the entire table
     void printIdx(int)const;    // prints a specific hash index item and its linklist
@@ -52,6 +53,11 @@ private:
     void reSize(int);
     int nullSum(Node<T>[], int);
 };
+
+template<class T>
+void Hash_chain<T>::printOccur(T search){
+
+}
 
 template <class T>
 Hash_chain<T>::Hash_chain(){
@@ -365,7 +371,7 @@ bool Hash_chain<T>::isInChar(char* search, int place)const{
         tmp = array[place].next;
         while(tmp != nullptr){
             if(strcmp(tmp->item,search)==0){
-                array[place].rank++;
+                tmp->rank++;
                 tmp = nullptr;
                 return true;
             }
